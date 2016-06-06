@@ -1,0 +1,11 @@
+- void css(string file)
+	link(rel='stylesheet', type='text/css', href='/source/css/#{file}.css')
+
+doctype html
+html
+	head
+		title Journal
+		script(src="/source/js/jquery-2.1.3.min.js")
+		script(src="/source/js/test/test.js")
+	body
+		h1 Testing
