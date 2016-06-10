@@ -1,4 +1,4 @@
-module example.helpers;
+module boiler.helpers;
 
 import std.algorithm : fill;
 import std.ascii : letters, digits;

@@ -1,7 +1,6 @@
 module boiler.server;
 
 import vibe.http.server;
-import example.user;
 import vibe.core.log;
 import std.algorithm;
 import std.file;
@@ -15,6 +14,8 @@ import mondo;
 import boiler.model;
 import vibe.http.fileserver;
 import std.format;
+
+import boiler.user;
 
 class Server {
 private:

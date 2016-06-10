@@ -1,14 +1,15 @@
-module example.user;
+module boiler.user;
 
 import vibe.http.server;
-import boiler.server;
 import vibe.core.log;
-import example.helpers;
 import mondo;
 import std.digest.sha;
 import bsond;
 import std.stdio;
+
+import boiler.server;
 import boiler.model;
+import boiler.helpers;
 
 class User_model {
 	Mongo mongo;
