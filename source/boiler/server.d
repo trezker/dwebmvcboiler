@@ -1,19 +1,20 @@
 module boiler.server;
 
-import vibe.http.server;
-import vibe.core.log;
 import std.algorithm;
 import std.file;
 import std.json;
 import std.functional;
 import std.conv;
+import std.array;
+import std.format;
+import vibe.http.server;
+import vibe.core.log;
 import vibe.http.websockets : WebSocket;
 import vibe.core.core : sleep;
 import core.time;
 import mondo;
 import boiler.model;
 import vibe.http.fileserver;
-import std.format;
 
 import boiler.user;
 
@@ -51,6 +52,23 @@ public:
 
 	void test(HTTPServerRequest req, HTTPServerResponse res) {
 		res.render!("test.dt", req);
+	}
+
+	void get(HTTPServerRequest req, HTTPServerResponse res) {
+		try {
+			string path = req.path;
+			auto splitpath = split(path, "/");
+			if(splitpath.length < 4)
+				return;
+			string model = splitpath[2];
+			string method = splitpath[3];
+			if(model in models && method in models[model]) {
+				models[model][method].call (req, res);
+			}
+		}
+		catch(Exception e) {
+			logInfo(e.msg);
+		}
 	}
 
 	void ajax(HTTPServerRequest req, HTTPServerResponse res) {

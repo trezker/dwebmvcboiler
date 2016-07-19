@@ -31,12 +31,7 @@ shared static this() {
 	router.post("/ajax*", &server.ajax);
 	router.get("/ws", handleWebSockets(&server.websocket));
 	router.get("/source/*", serveStaticFiles("./public/"));
-/*
-	auto pagesettings = new HTTPFileServerSettings;
-	pagesettings.preWriteCallback = &server.preWriteCallback;
-	router.get("/js/*", serveStaticFiles("./public/", pagesettings));
-	router.get("/css/*", serveStaticFiles("./public/", pagesettings));
-*/
+	router.get("/get/*", &server.get);
 	router.get("/*", &server.page);
 
 	listenHTTP(settings, router);
