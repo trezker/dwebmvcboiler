@@ -1,4 +1,4 @@
-module boiler.user;
+module application.user;
 
 import vibe.http.server;
 import vibe.core.log;

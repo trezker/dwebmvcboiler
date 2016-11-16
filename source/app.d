@@ -1,12 +1,13 @@
-import core.stdc.stdlib;
 import std.functional;
+import core.stdc.stdlib;
 import vibe.appmain;
 import vibe.core.core;
 import vibe.core.log;
 import vibe.http.router;
 import vibe.http.fileserver;
-import boiler.server;
 import vibe.http.websockets : handleWebSockets;
+
+import boiler.server;
 
 shared static this() {
 	auto server = new Server;
