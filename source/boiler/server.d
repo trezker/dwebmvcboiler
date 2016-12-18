@@ -60,8 +60,8 @@ public:
 
 	void ajax(HTTPServerRequest req, HTTPServerResponse res) {
 		try {
-			string model = req.json.model.to!string;
-			string method = req.json.method.to!string;
+			string model = req.json["model"].to!string;
+			string method = req.json["method"].to!string;
 			if(model in models && method in models[model]) {
 				models[model][method].call (req, res);
 			}

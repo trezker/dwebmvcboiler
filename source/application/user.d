@@ -56,8 +56,8 @@ class User_model {
 			return;
 		}
 
-		string username = req.json.username.to!string;
-		string password = req.json.password.to!string;
+		string username = req.json["username"].to!string;
+		string password = req.json["password"].to!string;
 
 		Collection user_collection = mongo.journal.user;
 
@@ -94,8 +94,8 @@ class User_model {
 	}
 
 	void create_user(HTTPServerRequest req, HTTPServerResponse res) {
-		string username = req.json.username.to!string;
-		string password = req.json.password.to!string;
+		string username = req.json["username"].to!string;
+		string password = req.json["password"].to!string;
 
 		Collection user_collection = mongo.journal.user;
 
@@ -128,7 +128,7 @@ class User_model {
 	}
 
 	void delete_user(HTTPServerRequest req, HTTPServerResponse res) {
-		string username = req.json.username.to!string;
+		string username = req.json["username"].to!string;
 		//Method only for testing, in real usage users are never deleted.
 		if(username != "testuser")
 		{
