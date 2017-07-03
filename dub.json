@@ -4,7 +4,7 @@
 	"copyright": "Copyright © 2016, Anders Andersson",
 	"authors": ["Anders Andersson"],
 	"dependencies": {
-		"vibe-d": ">=0.7.26",
+		"vibe-d": ">=0.7.31",
 		"mondo": ">=1.1.3",
 		"dcrypto": "~>1.2.2"
 	},

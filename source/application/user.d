@@ -6,10 +6,12 @@ import mondo;
 import std.digest.sha;
 import bsond;
 import std.stdio;
+import std.json;
 
 import boiler.server;
 import boiler.model;
 import boiler.helpers;
+import boiler.httphandlertester;
 
 class User_model {
 	Mongo mongo;
@@ -40,11 +42,20 @@ class User_model {
 
 	void get_current_user_id(HTTPServerRequest req, HTTPServerResponse res) {
 		if(!req.session) {
-			res.writeJsonBody(false);
+			JSONValue json;
+			json["success"] = false;
+			res.writeBody(json.toString, 200);
 			return;
 		}
 		auto id = req.session.get!string("id");
 		res.writeJsonBody(id);
+	}
+
+	unittest {
+		User_model m = new User_model;
+		HTTPHandlerTester tester = new HTTPHandlerTester(&m.get_current_user_id);
+		JSONValue json = tester.get_reponse_json();
+		assert(json["success"] == JSONValue(false));
 	}
 
 	void login_password(HTTPServerRequest req, HTTPServerResponse res) {
