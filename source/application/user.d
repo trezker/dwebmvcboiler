@@ -15,9 +15,12 @@ import boiler.httphandlertester;
 
 class User_model {
 	Mongo mongo;
+	Collection collection;
 
 	void setup(Mongo m, ref Model_method[string][string] models) {
 		mongo = m;
+		collection = mongo.boiler.user;
+
 		models["user"]["get_current_user_id"] = Model_method(
 			[],
 			&this.get_current_user_id
@@ -38,6 +41,40 @@ class User_model {
 			[],
 			&this.delete_user
 		);
+	}
+
+	void create_user(HTTPServerRequest req, HTTPServerResponse res) {
+		string username = req.json["username"].to!string;
+		string password = req.json["password"].to!string;
+
+		Collection user_collection = mongo.journal.user;
+
+		auto success = false;
+		try {
+			Query q = new Query();
+			q.conditions["name"] = username;
+			q.fields["_id"] = true;
+			auto r = user_collection.find(q);
+			if(r.empty) {
+				//Create the user
+				string salt = get_random_string(32);
+				ubyte[32] hash = sha512_256Of(salt ~ password);
+				string hashed_password = toHexString(hash);
+
+				user_collection.insert(
+					BO(
+						"name", username,
+						"salt", salt,
+						"pass", hashed_password
+					)
+				);
+				success = true;
+			}
+		}
+		catch(Exception e) {
+		}
+
+		res.writeJsonBody(success);
 	}
 
 	void get_current_user_id(HTTPServerRequest req, HTTPServerResponse res) {
@@ -102,40 +139,6 @@ class User_model {
 			res.terminateSession();
 		}
 		res.writeJsonBody(true);
-	}
-
-	void create_user(HTTPServerRequest req, HTTPServerResponse res) {
-		string username = req.json["username"].to!string;
-		string password = req.json["password"].to!string;
-
-		Collection user_collection = mongo.journal.user;
-
-		auto success = false;
-		try {
-			Query q = new Query();
-			q.conditions["name"] = username;
-			q.fields["_id"] = true;
-			auto r = user_collection.find(q);
-			if(r.empty) {
-				//Create the user
-				string salt = get_random_string(32);
-				ubyte[32] hash = sha512_256Of(salt ~ password);
-				string hashed_password = toHexString(hash);
-
-				user_collection.insert(
-					BO(
-						"name", username,
-						"salt", salt,
-						"pass", hashed_password
-					)
-				);
-				success = true;
-			}
-		}
-		catch(Exception e) {
-		}
-
-		res.writeJsonBody(success);
 	}
 
 	void delete_user(HTTPServerRequest req, HTTPServerResponse res) {
