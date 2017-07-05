@@ -7,7 +7,6 @@ import std.algorithm;
 import std.exception;
 import boiler.helpers;
 
-
 class User_storage {
 	Collection collection;
 	this(Collection c) {
@@ -61,7 +60,7 @@ class User_storage {
 		}
 	}
 
-	BsonObject find_user(string username) {
+	BsonObject get_user_by_name(string username) {
 		Query q = new Query();
 		q.conditions = BO("username", username);
 		auto obj = collection.findOne(q);
@@ -79,7 +78,7 @@ class User_storage {
 			auto username = "name"; 
 			us.create_user("wrong", "");
 			us.create_user(username, "");
-			auto obj = us.find_user(username);
+			auto obj = us.get_user_by_name(username);
 
 			assertEqual(obj["username"].as!string, username);
 		}
@@ -96,7 +95,7 @@ class User_storage {
 		try {
 			User_storage us = new User_storage(collection);
 			auto username = "name"; 
-			auto obj = us.find_user(username);
+			auto obj = us.get_user_by_name(username);
 			assertEqual(obj, BO());
 		}
 		finally {
@@ -104,7 +103,7 @@ class User_storage {
 		}
 	}
 
-	BsonObject find_user_id(ObjectId id) {
+	BsonObject get_user_by_id(ObjectId id) {
 		Query q = new Query();
 		q.conditions = BO("_id", id);
 		auto obj = collection.findOne(q);
@@ -121,12 +120,12 @@ class User_storage {
 			auto username = "name"; 
 			us.create_user("wrong", "");
 			us.create_user(username, "");
-			auto obj = us.find_user(username);
+			auto obj = us.get_user_by_name(username);
 			//Testing how to pass around id as string and then using it against mongo.
 			ObjectId oid = obj["_id"].as!ObjectId;
 			string sid = oid.toString().dup[10..34];
 			ObjectId nid = sid;
-			auto objid = us.find_user_id(nid);
+			auto objid = us.get_user_by_id(nid);
 
 			assertEqual(objid["username"].as!string, username);
 		}
