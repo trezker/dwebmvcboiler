@@ -12,7 +12,7 @@ import std.json;
 import boiler.server;
 import boiler.model;
 import boiler.helpers;
-import boiler.httphandlertester;
+import boiler.HttpHandlerTester;
 
 import application.storage.user;
 
@@ -91,7 +91,7 @@ class User_model {
 	unittest {
 		User_model m = new User_model;
 		HTTPHandlerTester tester = new HTTPHandlerTester(&m.create_user);
-		JSONValue json = tester.get_reponse_json();
+		JSONValue json = tester.get_response_json();
 		assert(json["success"] == JSONValue(false));
 	}
 
@@ -109,7 +109,7 @@ class User_model {
 	unittest {
 		User_model m = new User_model;
 		HTTPHandlerTester tester = new HTTPHandlerTester(&m.get_current_user_id);
-		JSONValue json = tester.get_reponse_json();
+		JSONValue json = tester.get_response_json();
 		assert(json["success"] == JSONValue(false));
 	}
 
