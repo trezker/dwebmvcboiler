@@ -48,60 +48,39 @@ class User_model {
 		);
 	}
 
-	bool json_is_type(Json j, JSON_TYPE t) {
-		if (j.type() == t) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-
 	void create_user(HTTPServerRequest req, HTTPServerResponse res) {
-		if(!json_is_type(req.json, JSON_TYPE.OBJECT)) {
-			JSONValue json;
-			json["success"] = false;
-			json["info"] = "Missing parameters";
-			res.writeBody(json.toString, 200);
-			return;
-		}
+		//Total remake.
+		//Each request handler should be an object by itself.
+		//There should be a factory to provide a handler for each request.
+		//Keep pools of handlers to reduce allocations?
 
-		if(!json_is_type(req.json["username"], JSON_TYPE.STRING)) {
-			JSONValue json;
-			json["success"] = false;
-			json["info"] = "Missing parameter: username";
-			res.writeBody(json.toString, 200);
-			return;
-		}
-
-		if(req.json["password"] == JSON_TYPE.NULL){
-			JSONValue json;
-			json["success"] = false;
-			json["info"] = "Missing parameter: password";
-			res.writeBody(json.toString, 200);
-			return;
-		}
-
-		string username = req.json["username"].to!string;
-		string password = req.json["password"].to!string;
-
-		auto obj = user_storage.get_user_by_name(username);
-		if(obj == BO()) {
-			JSONValue json;
-			json["success"] = false;
-			json["info"] = "Username is taken";
-			res.writeBody(json.toString, 200);
-			return;
-		}
+		//I think I'm best off assuming all parameters are in place, which they should be if this is called from client code.
+		//Exceptions should only happen during development or if someone is trying to hack the API.
 
 		try {
+			//Read parameters
+			string username = req.json["username"].to!string;
+			string password = req.json["password"].to!string;
+
+			//Check that username is not taken
+			auto obj = user_storage.get_user_by_name(username);
+			if(obj == BO()) {
+				JSONValue json;
+				json["success"] = false;
+				json["info"] = "Username is taken";
+				res.writeBody(json.toString, 200);
+				return;
+			}
+
 			user_storage.create_user(username, password);
 
+			//Write result
 			JSONValue json;
 			json["success"] = true;
 			res.writeBody(json.toString, 200);
 		}
 		catch(Exception) {
+			//Write result
 			JSONValue json;
 			json["success"] = false;
 			res.writeBody(json.toString, 200);
