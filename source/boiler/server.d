@@ -37,10 +37,6 @@ public:
 		res.render!("error.dt", req, error);
 	}
 
-	void test(HTTPServerRequest req, HTTPServerResponse res) {
-		res.render!("test.dt", req);
-	}
-
 	void get(HTTPServerRequest req, HTTPServerResponse res) {
 		try {
 			string path = req.path;
