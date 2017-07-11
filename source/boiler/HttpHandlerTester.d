@@ -2,7 +2,9 @@ module boiler.HttpHandlerTester;
 
 import boiler.model;
 import vibe.inet.url;
+import vibe.data.json;
 import vibe.http.server;
+import vibe.utils.string;
 import vibe.inet.message;
 import vibe.stream.memory;
 import vibe.stream.operations;
@@ -10,6 +12,7 @@ import std.conv;
 import std.json;
 import std.stdio;
 import std.string;
+
 
 class HTTPHandlerTester {
 	HTTPServerRequest req;
@@ -45,14 +48,13 @@ class HTTPHandlerTester {
 
 	this(Request_delegate handler, string input) {
 		InetHeaderMap headers;
-		headers["contentType"] = "application/json";
+		headers["Content-Type"] = "application/json";
 
 		auto inputStream = new MemoryStream(inputdata);
 		inputStream.write(cast(const(ubyte)[])input);
 		inputStream.seek(0);
 		req = createTestHTTPServerRequest(URL("http://localhost/test"), HTTPMethod.POST, headers, inputStream);
 
-		//TODO: fix this. Need to emulate the request coming hrough vibe server
 		if (icmp2(req.contentType, "application/json") == 0 || icmp2(req.contentType, "application/vnd.api+json") == 0 ) {
 			auto bodyStr = () @trusted { return cast(string)req.bodyReader.readAll(); } ();
 			if (!bodyStr.empty) req.json = parseJson(bodyStr);
@@ -103,10 +105,10 @@ class JsonInputDummyHandler {
 	}
 
 	void handleRequest(HTTPServerRequest req, HTTPServerResponse res) {
-		writeln(req.contentType);
-		writeln(req.headers);
+		//writeln(req.contentType);
+		//writeln(req.headers);
 		//req.bodyReader.seek(0);
- 		writeln(req.bodyReader.readAllUTF8());
+ 		//writeln(req.bodyReader.readAllUTF8());
 		if(req.json["data"].to!int == 4) {
 			receivedJson = true;
 		}
