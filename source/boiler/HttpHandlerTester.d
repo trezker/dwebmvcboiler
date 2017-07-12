@@ -78,8 +78,6 @@ class HTTPHandlerTester {
 		auto lines = getResponseLines();
 		return parseJSON(lines[$-1]);
 	}
-
-	//TODO: Test get_response_json
 }
 
 class CallFlagDummyHandler {
