@@ -18,15 +18,12 @@ import std.string;
 class HTTPHandlerTester {
 	HTTPServerRequest req;
 	HTTPServerResponse res;
-	string rawResponse;
-	string[] lines;
 	MemoryStream response_stream;
 	ubyte[1000000] outputdata;
 
 	this(Request_delegate handler) {
 		req = createTestHTTPServerRequest(URL("http://localhost/test"), HTTPMethod.POST);//, InetHeaderMap headers, InputStream data = null)
 		call_handler(handler);
-		read_response();
 	}
 
 	//Creating a tester with handler calls the handler.
@@ -41,7 +38,6 @@ class HTTPHandlerTester {
 	this(Request_delegate handler, string input = "") {
 		PrepareJsonRequest(input);
 		call_handler(handler);
-		read_response();
 	}
 
 	//Creating a tester with json post data should give the handler access to the data.
@@ -76,16 +72,18 @@ class HTTPHandlerTester {
 		res.finalize;
 	}
 
-	private void read_response() {
+	public string[] getResponseLines() {
 		response_stream.seek(0);
- 		rawResponse = response_stream.readAllUTF8();
- 		lines = rawResponse.splitLines();
+ 		string rawResponse = response_stream.readAllUTF8();
+		return rawResponse.splitLines();
 	}
 
 	public JSONValue get_response_json() {
+		auto lines = getResponseLines();
 		return parseJSON(lines[$-1]);
 	}
 
+	//TODO: Test get_response_json
 }
 
 class CallFlagDummyHandler {
