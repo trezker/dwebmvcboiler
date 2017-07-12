@@ -38,28 +38,8 @@ class HTTPHandlerTester {
 		assert(dummy.called);
 	}
 
-	private void call_handler(Request_delegate handler) {
-		response_stream = new MemoryStream(data);
-		res = createTestHTTPServerResponse(response_stream);//SessionStore session_store = null)
-		handler(req, res);
-		res.finalize;
-	}
-
-
 	this(Request_delegate handler, string input) {
-		InetHeaderMap headers;
-		headers["Content-Type"] = "application/json";
-
-		auto inputStream = new MemoryStream(inputdata);
-		inputStream.write(cast(const(ubyte)[])input);
-		inputStream.seek(0);
-		req = createTestHTTPServerRequest(URL("http://localhost/test"), HTTPMethod.POST, headers, inputStream);
-
-		if (icmp2(req.contentType, "application/json") == 0 || icmp2(req.contentType, "application/vnd.api+json") == 0 ) {
-			auto bodyStr = () @trusted { return cast(string)req.bodyReader.readAll(); } ();
-			if (!bodyStr.empty) req.json = parseJson(bodyStr);
-		}
-
+		PrepareJsonRequest(input);
 		call_handler(handler);
 		read_response();
 	}
@@ -71,6 +51,36 @@ class HTTPHandlerTester {
 		auto tester = new HTTPHandlerTester(&dummy.handleRequest, "{ \"data\": 4 }");
 
 		assert(dummy.receivedJson);
+	}
+
+	private void PrepareJsonRequest(string input) {
+		InetHeaderMap headers;
+		headers["Content-Type"] = "application/json";
+
+		auto inputStream = createInputStream(input);
+		req = createTestHTTPServerRequest(URL("http://localhost/test"), HTTPMethod.POST, headers, inputStream);
+		populateRequestJson();
+	}
+
+	private InputStream createInputStream(string input) {
+		auto inputStream = new MemoryStream(inputdata);
+		inputStream.write(cast(const(ubyte)[])input);
+		inputStream.seek(0);
+		return inputStream;
+	}
+
+	private void populateRequestJson() {
+		if (icmp2(req.contentType, "application/json") == 0 || icmp2(req.contentType, "application/vnd.api+json") == 0 ) {
+			auto bodyStr = () @trusted { return cast(string)req.bodyReader.readAll(); } ();
+			if (!bodyStr.empty) req.json = parseJson(bodyStr);
+		}
+	}
+
+	private void call_handler(Request_delegate handler) {
+		response_stream = new MemoryStream(data);
+		res = createTestHTTPServerResponse(response_stream);//SessionStore session_store = null)
+		handler(req, res);
+		res.finalize;
 	}
 
 	private void read_response() {
@@ -105,10 +115,6 @@ class JsonInputDummyHandler {
 	}
 
 	void handleRequest(HTTPServerRequest req, HTTPServerResponse res) {
-		//writeln(req.contentType);
-		//writeln(req.headers);
-		//req.bodyReader.seek(0);
- 		//writeln(req.bodyReader.readAllUTF8());
 		if(req.json["data"].to!int == 4) {
 			receivedJson = true;
 		}
