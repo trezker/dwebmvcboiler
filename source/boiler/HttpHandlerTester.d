@@ -1,6 +1,7 @@
 module boiler.HttpHandlerTester;
 
 import boiler.model;
+import boiler.helpers;
 import vibe.inet.url;
 import vibe.data.json;
 import vibe.http.server;
@@ -20,8 +21,7 @@ class HTTPHandlerTester {
 	string rawResponse;
 	string[] lines;
 	MemoryStream response_stream;
-	ubyte[1000000] data;
-	ubyte[1000000] inputdata;
+	ubyte[1000000] outputdata;
 
 	this(Request_delegate handler) {
 		req = createTestHTTPServerRequest(URL("http://localhost/test"), HTTPMethod.POST);//, InetHeaderMap headers, InputStream data = null)
@@ -38,7 +38,7 @@ class HTTPHandlerTester {
 		assert(dummy.called);
 	}
 
-	this(Request_delegate handler, string input) {
+	this(Request_delegate handler, string input = "") {
 		PrepareJsonRequest(input);
 		call_handler(handler);
 		read_response();
@@ -57,16 +57,9 @@ class HTTPHandlerTester {
 		InetHeaderMap headers;
 		headers["Content-Type"] = "application/json";
 
-		auto inputStream = createInputStream(input);
+		auto inputStream = createInputStreamFromString(input);
 		req = createTestHTTPServerRequest(URL("http://localhost/test"), HTTPMethod.POST, headers, inputStream);
 		populateRequestJson();
-	}
-
-	private InputStream createInputStream(string input) {
-		auto inputStream = new MemoryStream(inputdata);
-		inputStream.write(cast(const(ubyte)[])input);
-		inputStream.seek(0);
-		return inputStream;
 	}
 
 	private void populateRequestJson() {
@@ -77,7 +70,7 @@ class HTTPHandlerTester {
 	}
 
 	private void call_handler(Request_delegate handler) {
-		response_stream = new MemoryStream(data);
+		response_stream = new MemoryStream(outputdata);
 		res = createTestHTTPServerResponse(response_stream);//SessionStore session_store = null)
 		handler(req, res);
 		res.finalize;

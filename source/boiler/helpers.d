@@ -7,6 +7,7 @@ import std.random : randomCover, rndGen;
 import std.range : chain;
 import std.string;
 import core.exception;
+import vibe.stream.memory;
 
 string get_random_string(uint length) {
 	auto asciiLetters = to!(dchar[])(letters);
@@ -36,3 +37,11 @@ alias assertOp!"==" assertEqual;
 alias assertOp!"!=" assertNotEqual;
 alias assertOp!">" assertGreaterThan;
 alias assertOp!">=" assertGreaterThanOrEqual;
+
+MemoryStream createInputStreamFromString(string input) {
+	ubyte[1000000] inputdata;
+	auto inputStream = new MemoryStream(inputdata);
+	inputStream.write(cast(const(ubyte)[])input);
+	inputStream.seek(0);
+	return inputStream;
+}
