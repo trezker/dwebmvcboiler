@@ -35,7 +35,7 @@ class HTTPHandlerTester {
 		assert(dummy.called);
 	}
 
-	this(Request_delegate handler, string input = "") {
+	this(Request_delegate handler, string input) {
 		PrepareJsonRequest(input);
 		call_handler(handler);
 	}
