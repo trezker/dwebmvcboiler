@@ -9,11 +9,7 @@ import vibe.utils.string;
 import vibe.inet.message;
 import vibe.stream.memory;
 import vibe.stream.operations;
-import std.conv;
 import std.json;
-import std.stdio;
-import std.string;
-
 
 class HTTPHandlerTester {
 	HTTPServerRequest req;
