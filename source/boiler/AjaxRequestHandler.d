@@ -1,14 +1,38 @@
 module boiler.AjaxRequestHandler;
 
 import boiler.HttpHandlerTester;
+import boiler.model;
 import vibe.http.server;
 import std.json;
 
+interface RequestHandler {
+	public void handleRequest(HTTPServerRequest req, HTTPServerResponse res);
+}
+
 class AjaxRequestHandler {
-	void handleRequest(HTTPServerRequest req, HTTPServerResponse res) {
-		JSONValue json;
-		json["success"] = false;
-		res.writeBody(json.toString, 200);
+	private RequestHandler[string] handlers;
+
+	public void SetHandler(string name, RequestHandler handler) {
+		handlers[name] = handler;
+	}
+
+	public void handleRequest(HTTPServerRequest req, HTTPServerResponse res) {
+		try {
+			string method = req.json["method"].to!string;
+			if(method in handlers) {
+				handlers[method].handleRequest (req, res);
+			}
+			else {
+				JSONValue json;
+				json["success"] = false;
+				res.writeBody(json.toString, 200);
+			}
+		}
+		catch(Exception e) {
+			JSONValue json;
+			json["success"] = false;
+			res.writeBody(json.toString, 200);
+		}
 	}
 
 	//Call without parameters should fail.
@@ -24,11 +48,30 @@ class AjaxRequestHandler {
 	//Call to method that doesn't exist should fail.
 	unittest {
 		AjaxRequestHandler handler = new AjaxRequestHandler();
-		//TODO: initiate tester with request data
 
-		HTTPHandlerTester tester = new HTTPHandlerTester(&handler.handleRequest);
+		HTTPHandlerTester tester = new HTTPHandlerTester(&handler.handleRequest, "{\"method\": \"none\"}");
 
 		JSONValue json = tester.get_response_json();
 		assert(json["success"] == JSONValue(false));
+	}
+
+	//Call to method that exists should succeed.
+	unittest {
+		AjaxRequestHandler handler = new AjaxRequestHandler();
+		handler.SetHandler("test", new SuccessTestHandler);
+
+		HTTPHandlerTester tester = new HTTPHandlerTester(&handler.handleRequest, "{\"method\": \"test\"}");
+
+		JSONValue json = tester.get_response_json();
+		assert(json["success"] == JSONValue(true));
+	}
+}
+
+class SuccessTestHandler : RequestHandler {
+	public void handleRequest(HTTPServerRequest req, HTTPServerResponse res) {
+		JSONValue json;
+		json["success"] = true;
+		res.writeBody(json.toString, 200);
+		return;
 	}
 }
