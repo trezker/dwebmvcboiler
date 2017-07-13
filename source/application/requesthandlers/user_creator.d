@@ -1,4 +1,4 @@
-module application.user_creator;
+module application.UserCreator;
 
 import mondo;
 import bsond;
@@ -6,8 +6,9 @@ import std.json;
 import vibe.http.server;
 import application.storage.user;
 import boiler.HttpHandlerTester;
+import boiler.Ajax;
 
-class User_creator: HTTPServerRequestHandler {
+class UserCreator: RequestHandler {
 	User_storage user_storage;
 
 	void setup(User_storage user_storage) {
@@ -55,7 +56,7 @@ class User_creator: HTTPServerRequestHandler {
 
 	//Create user without parameters should fail.
 	unittest {
-		User_creator m = new User_creator;
+		UserCreator m = new UserCreator;
 		auto mongo = new Mongo("mongodb://localhost");
 		m.setup(new User_storage(mongo.boiler.user));
 

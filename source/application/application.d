@@ -5,8 +5,10 @@ import vibe.core.log;
 
 import mondo;
 import boiler.model;
+import boiler.Ajax;
 
 import application.user;
+import application.UserCreator;
 
 class Application {
 	Mongo mongo;
@@ -26,6 +28,10 @@ class Application {
 
 	void setup_models(ref Model_method[string][string] models) {
 		user_model.setup(mongo, models);
+	}
+
+	void SetupAjaxMethods(AjaxRequestHandler ajaxRequestHandler) {
+		ajaxRequestHandler.SetHandler("create_user", new UserCreator());
 	}
 
 	string rewrite_path(HTTPServerRequest req) {

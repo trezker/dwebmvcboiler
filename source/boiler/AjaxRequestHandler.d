@@ -1,4 +1,4 @@
-module boiler.AjaxRequestHandler;
+module boiler.Ajax;
 
 import boiler.HttpHandlerTester;
 import boiler.model;

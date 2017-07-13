@@ -13,6 +13,7 @@ import vibe.http.websockets : WebSocket;
 import vibe.core.core : sleep;
 import core.time;
 import boiler.model;
+import boiler.Ajax;
 import vibe.http.fileserver;
 
 import application.application;
@@ -21,8 +22,10 @@ class Server {
 private:
 	Model_method[string][string] models;
 	Application application;
+	AjaxRequestHandler ajaxRequestHandler;
 public:
 	bool setup() {
+		ajaxRequestHandler = new AjaxRequestHandler();
 		application = new Application();
 		if(!application.initialize()) {
 			logInfo("Application initialization failed.");
@@ -30,6 +33,7 @@ public:
 		}
 
 		application.setup_models(models);
+		application.SetupAjaxMethods(ajaxRequestHandler);
 		return true;
 	}
 
