@@ -6,7 +6,7 @@ import vibe.http.server;
 import std.json;
 
 interface RequestHandler {
-	public void handleRequest(HTTPServerRequest req, HTTPServerResponse res);
+	public void HandleRequest(HTTPServerRequest req, HTTPServerResponse res);
 }
 
 class AjaxRequestHandler {
@@ -16,11 +16,11 @@ class AjaxRequestHandler {
 		handlers[name] = handler;
 	}
 
-	public void handleRequest(HTTPServerRequest req, HTTPServerResponse res) {
+	public void HandleRequest(HTTPServerRequest req, HTTPServerResponse res) {
 		try {
 			string method = req.json["method"].to!string;
 			if(method in handlers) {
-				handlers[method].handleRequest (req, res);
+				handlers[method].HandleRequest (req, res);
 			}
 			else {
 				JSONValue json;
@@ -39,7 +39,7 @@ class AjaxRequestHandler {
 	unittest {
 		AjaxRequestHandler handler = new AjaxRequestHandler();
 
-		HTTPHandlerTester tester = new HTTPHandlerTester(&handler.handleRequest);
+		HTTPHandlerTester tester = new HTTPHandlerTester(&handler.HandleRequest);
 
 		JSONValue json = tester.get_response_json();
 		assert(json["success"] == JSONValue(false));
@@ -49,7 +49,7 @@ class AjaxRequestHandler {
 	unittest {
 		AjaxRequestHandler handler = new AjaxRequestHandler();
 
-		HTTPHandlerTester tester = new HTTPHandlerTester(&handler.handleRequest, "{\"method\": \"none\"}");
+		HTTPHandlerTester tester = new HTTPHandlerTester(&handler.HandleRequest, "{\"method\": \"none\"}");
 
 		JSONValue json = tester.get_response_json();
 		assert(json["success"] == JSONValue(false));
@@ -60,7 +60,7 @@ class AjaxRequestHandler {
 		AjaxRequestHandler handler = new AjaxRequestHandler();
 		handler.SetHandler("test", new SuccessTestHandler);
 
-		HTTPHandlerTester tester = new HTTPHandlerTester(&handler.handleRequest, "{\"method\": \"test\"}");
+		HTTPHandlerTester tester = new HTTPHandlerTester(&handler.HandleRequest, "{\"method\": \"test\"}");
 
 		JSONValue json = tester.get_response_json();
 		assert(json["success"] == JSONValue(true));
@@ -68,7 +68,7 @@ class AjaxRequestHandler {
 }
 
 class SuccessTestHandler : RequestHandler {
-	public void handleRequest(HTTPServerRequest req, HTTPServerResponse res) {
+	public void HandleRequest(HTTPServerRequest req, HTTPServerResponse res) {
 		JSONValue json;
 		json["success"] = true;
 		res.writeBody(json.toString, 200);

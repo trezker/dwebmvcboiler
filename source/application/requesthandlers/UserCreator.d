@@ -15,7 +15,7 @@ class UserCreator: RequestHandler {
 		user_storage = user_storage;
 	}	
 
-	void handleRequest(HTTPServerRequest req, HTTPServerResponse res) {
+	void HandleRequest(HTTPServerRequest req, HTTPServerResponse res) {
 		//Total remake.
 		//Each request handler should be an object by itself.
 		//There should be a factory to provide a handler for each request.
@@ -60,7 +60,7 @@ class UserCreator: RequestHandler {
 		auto mongo = new Mongo("mongodb://localhost");
 		m.setup(new User_storage(mongo.boiler.user));
 
-		HTTPHandlerTester tester = new HTTPHandlerTester(&m.handleRequest);
+		HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest);
 
 		JSONValue json = tester.get_response_json();
 		assert(json["success"] == JSONValue(false));
