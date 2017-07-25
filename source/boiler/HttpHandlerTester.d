@@ -65,7 +65,7 @@ class HTTPHandlerTester {
 		response_stream = new MemoryStream(outputdata);
 		res = createTestHTTPServerResponse(response_stream);//SessionStore session_store = null)
 		handler(req, res);
-		res.finalize;
+		//res.finalize;
 	}
 
 	public string[] getResponseLines() {

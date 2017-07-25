@@ -1,5 +1,5 @@
 module application.user;
-
+/*
 import vibe.http.server;
 import vibe.core.log;
 import vibe.data.json;
@@ -177,3 +177,4 @@ class User_model {
 		res.writeJsonBody(true);
 	}
 }
+*/

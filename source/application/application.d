@@ -7,17 +7,18 @@ import mondo;
 import boiler.model;
 import boiler.Ajax;
 
-import application.user;
+//import application.user;
 import application.UserCreator;
 
 class Application {
-	Mongo mongo;
-	User_model user_model;
+	//Mongo mongo;
+	//User_model user_model;
 
 	bool initialize() {
 		try {
-			mongo = new Mongo("mongodb://localhost");
-			user_model = new User_model;
+			MongoPool pool = new MongoPool("mongodb://localhost");
+			Mongo mongo = pool.pop;
+			//user_model = new User_model;
 		}
 		catch(Exception e) {
 			logInfo(e.msg);
@@ -27,7 +28,7 @@ class Application {
 	}
 
 	void setup_models(ref Model_method[string][string] models) {
-		user_model.setup(mongo, models);
+		//user_model.setup(mongo, models);
 	}
 
 	void SetupAjaxMethods(AjaxRequestHandler ajaxRequestHandler) {

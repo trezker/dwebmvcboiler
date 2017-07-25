@@ -1,18 +1,19 @@
 module application.UserCreator;
 
-import mondo;
-import bsond;
 import std.json;
+import std.stdio;
 import vibe.http.server;
-import application.storage.user;
+import vibe.db.mongo.mongo;
+
 import boiler.HttpHandlerTester;
 import boiler.Ajax;
+import application.storage.user;
 
 class UserCreator: RequestHandler {
 	User_storage user_storage;
 
 	void setup(User_storage user_storage) {
-		user_storage = user_storage;
+		this.user_storage = user_storage;
 	}	
 
 	void HandleRequest(HTTPServerRequest req, HTTPServerResponse res) {
@@ -31,7 +32,8 @@ class UserCreator: RequestHandler {
 
 			//Check that username is not taken
 			auto obj = user_storage.get_user_by_name(username);
-			if(obj == BO()) {
+			
+			if(obj == Bson(null)) {
 				JSONValue json;
 				json["success"] = false;
 				json["info"] = "Username is taken";
@@ -46,7 +48,7 @@ class UserCreator: RequestHandler {
 			json["success"] = true;
 			res.writeBody(json.toString, 200);
 		}
-		catch(Exception) {
+		catch(Exception e) {
 			//Write result
 			JSONValue json;
 			json["success"] = false;
@@ -56,13 +58,42 @@ class UserCreator: RequestHandler {
 
 	//Create user without parameters should fail.
 	unittest {
-		UserCreator m = new UserCreator;
-		auto mongo = new Mongo("mongodb://localhost");
-		m.setup(new User_storage(mongo.boiler.user));
+		MongoClient mongo = MongoAlloc.GetConnection();
+		auto collection = mongo.getCollection("my_database.my_collection");
+		
+		try {
+			UserCreator m = new UserCreator;
+			m.setup(new User_storage(collection));
 
-		HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest);
+			HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest);
 
-		JSONValue json = tester.get_response_json();
-		assert(json["success"] == JSONValue(false));
+			JSONValue json = tester.get_response_json();
+			assert(json["success"] == JSONValue(false));
+		}
+		finally {
+			collection.remove();
+		}
+	}
+
+	//Create user with name and password should succeed
+	unittest {
+		MongoClient mongo = MongoAlloc.GetConnection();
+		auto collection = mongo.getCollection("my_database.my_collection");
+		
+		try {
+			UserCreator m = new UserCreator;
+			m.setup(new User_storage(collection));
+			JSONValue jsoninput;
+			jsoninput["username"] = "testname";
+			jsoninput["password"] = "testpass";
+
+			HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
+
+			//JSONValue jsonoutput = tester.get_response_json();
+			//assert(jsonoutput["success"] == JSONValue(true));
+		}
+		finally {
+			collection.remove();
+		}
 	}
 }
