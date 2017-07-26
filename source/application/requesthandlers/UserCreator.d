@@ -55,7 +55,7 @@ class UserCreator: RequestHandler {
 
 		}
 	}
-/*
+
 	//Create user without parameters should fail.
 	unittest {
 		MongoClient mongo = MongoAlloc.GetConnection();
@@ -76,7 +76,7 @@ class UserCreator: RequestHandler {
 			db.fsync();
 		}
 	}
-*/
+
 	//Create user with name and password should succeed
 	unittest {
 		MongoClient mongo = MongoAlloc.GetConnection();
