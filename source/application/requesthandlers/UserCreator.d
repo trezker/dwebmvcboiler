@@ -32,7 +32,7 @@ class UserCreator: RequestHandler {
 
 			//Check that username is not taken
 			auto obj = user_storage.get_user_by_name(username);
-			
+			/*
 			if(obj == Bson(null)) {
 				JSONValue json;
 				json["success"] = false;
@@ -40,7 +40,7 @@ class UserCreator: RequestHandler {
 				res.writeBody(json.toString, 200);
 				return;
 			}
-
+*/
 			user_storage.create_user(username, password);
 
 			//Write result
@@ -53,9 +53,10 @@ class UserCreator: RequestHandler {
 			JSONValue json;
 			json["success"] = false;
 			res.writeBody(json.toString, 200);
+
 		}
 	}
-
+/*
 	//Create user without parameters should fail.
 	unittest {
 		MongoClient mongo = MongoAlloc.GetConnection();
@@ -72,9 +73,11 @@ class UserCreator: RequestHandler {
 		}
 		finally {
 			collection.remove();
+			auto db = mongo.getDatabase("my_database");
+			db.fsync();
 		}
 	}
-
+*/
 	//Create user with name and password should succeed
 	unittest {
 		MongoClient mongo = MongoAlloc.GetConnection();
@@ -89,11 +92,14 @@ class UserCreator: RequestHandler {
 
 			HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
 
-			//JSONValue jsonoutput = tester.get_response_json();
-			//assert(jsonoutput["success"] == JSONValue(true));
+			JSONValue jsonoutput = tester.get_response_json();
+			writeln(jsonoutput);
+			assert(jsonoutput["success"] == JSONValue(true));
 		}
 		finally {
 			collection.remove();
+			auto db = mongo.getDatabase("my_database");
+			db.fsync();
 		}
 	}
 }

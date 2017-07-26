@@ -15,9 +15,12 @@ class MongoAlloc {
 	static:
 	private MongoClient pool;
 	public MongoClient GetConnection() {
+		return connectMongoDB("mongodb://localhost");
+		/*
 		if(!pool)
 			pool = connectMongoDB("mongodb://localhost");
 		return pool;
+		*/
 	}
 
 }
@@ -44,7 +47,7 @@ class User_storage {
 			throw e;
 		}
 	}
-
+/*
 	/// create user
 	unittest {
 		MongoClient mongo = MongoAlloc.GetConnection();
@@ -56,8 +59,9 @@ class User_storage {
 		}
 		finally {
 			collection.remove();
+			auto db = mongo.getDatabase("my_database");
+			db.fsync();
 		}
-		
 	}
 
 	/// unique username
@@ -78,16 +82,17 @@ class User_storage {
 		}
 		finally {
 			collection.remove();
+			auto db = mongo.getDatabase("my_database");
+			db.fsync();
 		}
 	}
-
+*/
 	Bson get_user_by_name(string username) {
 		auto condition = Bson(["username": Bson(username)]);
 		auto obj = collection.findOne(condition);
 		return obj;
 	}
-
-
+/*
 	/// find user
 	unittest {
 		MongoClient mongo = MongoAlloc.GetConnection();
@@ -104,6 +109,32 @@ class User_storage {
 		}
 		finally {
 			collection.remove();
+			auto db = mongo.getDatabase("my_database");
+			db.fsync();
+		}
+	}
+
+	/// clear collection
+	unittest {
+		MongoClient mongo = MongoAlloc.GetConnection();
+		auto collection = mongo.getCollection("my_database.my_collection");
+
+		try {
+			User_storage us = new User_storage(collection);
+			auto username = "name"; 
+			us.create_user(username, "");
+			auto obj = us.get_user_by_name(username);
+
+			assertEqual(obj["username"].get!string, username);
+
+			collection.remove();
+			obj = us.get_user_by_name(username);
+			assertEqual(obj, Bson(null));
+		}
+		finally {
+			collection.remove();
+			auto db = mongo.getDatabase("my_database");
+			db.fsync();
 		}
 	}
 
@@ -120,15 +151,17 @@ class User_storage {
 		}
 		finally {
 			collection.remove();
+			auto db = mongo.getDatabase("my_database");
+			db.fsync();
 		}
 	}
-
+*/
 	Bson find_user_id(BsonObjectID id) {
 		auto conditions = Bson(["_id": Bson(id)]);
 		auto obj = collection.findOne(conditions);
 		return obj;
 	}
-
+/*
 	/// find user id
 	unittest {
 		MongoClient mongo = MongoAlloc.GetConnection();
@@ -150,9 +183,11 @@ class User_storage {
 		}
 		finally {
 			collection.remove();
+			auto db = mongo.getDatabase("my_database");
+			db.fsync();
 		}
 	}
-
+*/
 	unittest {
 		char[] pass = "aljksdn".dup;
 		string hashString = makeHash(toPassword(pass)).toString();
