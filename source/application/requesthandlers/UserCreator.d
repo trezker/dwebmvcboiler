@@ -32,15 +32,14 @@ class UserCreator: RequestHandler {
 
 			//Check that username is not taken
 			auto obj = user_storage.get_user_by_name(username);
-			/*
-			if(obj == Bson(null)) {
+			if(obj != Bson(null)) {
 				JSONValue json;
 				json["success"] = false;
 				json["info"] = "Username is taken";
 				res.writeBody(json.toString, 200);
 				return;
 			}
-*/
+
 			user_storage.create_user(username, password);
 
 			//Write result
