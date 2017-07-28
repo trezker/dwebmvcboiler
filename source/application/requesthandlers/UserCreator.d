@@ -8,6 +8,7 @@ import vibe.db.mongo.mongo;
 import boiler.HttpHandlerTester;
 import boiler.Ajax;
 import application.storage.user;
+import application.database;
 
 class UserCreator: RequestHandler {
 	User_storage user_storage;
@@ -58,12 +59,11 @@ class UserCreator: RequestHandler {
 
 	//Create user without parameters should fail.
 	unittest {
-		MongoClient mongo = MongoAlloc.GetConnection();
-		auto collection = mongo.getCollection("my_database.my_collection");
+		Database database = GetDatabase();
 		
 		try {
 			UserCreator m = new UserCreator;
-			m.setup(new User_storage(collection));
+			m.setup(new User_storage(database.GetCollection("my_collection")));
 
 			HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest);
 
@@ -71,20 +71,17 @@ class UserCreator: RequestHandler {
 			assert(json["success"] == JSONValue(false));
 		}
 		finally {
-			collection.remove();
-			auto db = mongo.getDatabase("my_database");
-			db.fsync();
+			database.ClearCollection("my_collection");
 		}
 	}
 
 	//Create user with name and password should succeed
 	unittest {
-		MongoClient mongo = MongoAlloc.GetConnection();
-		auto collection = mongo.getCollection("my_database.my_collection");
+		Database database = GetDatabase();
 		
 		try {
 			UserCreator m = new UserCreator;
-			m.setup(new User_storage(collection));
+			m.setup(new User_storage(database.GetCollection("my_collection")));
 			JSONValue jsoninput;
 			jsoninput["username"] = "testname";
 			jsoninput["password"] = "testpass";
@@ -92,13 +89,10 @@ class UserCreator: RequestHandler {
 			HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
 
 			JSONValue jsonoutput = tester.get_response_json();
-			writeln(jsonoutput);
 			assert(jsonoutput["success"] == JSONValue(true));
 		}
 		finally {
-			collection.remove();
-			auto db = mongo.getDatabase("my_database");
-			db.fsync();
+			database.ClearCollection("my_collection");
 		}
 	}
 }
