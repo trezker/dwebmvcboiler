@@ -13,9 +13,11 @@ import boiler.helpers;
 import application.database;
 
 class User_storage {
+	Database database;
 	MongoCollection collection;
-	this(MongoCollection c) {
-		collection = c;
+	this(Database database) {
+		this.database = database;
+		collection = database.GetCollection("user");
 	}
 
 	void create_user(string username, string password) {
@@ -40,11 +42,11 @@ class User_storage {
 		Database database = GetDatabase();
 
 		try {
-			User_storage us = new User_storage(database.GetCollection("my_collection"));
+			User_storage us = new User_storage(database);
 			assertNotThrown(us.create_user("name", "pass"));
 		}
 		finally {
-			database.ClearCollection("my_collection");
+			database.ClearCollection("user");
 		}
 	}
 
@@ -53,18 +55,18 @@ class User_storage {
 		Database database = GetDatabase();
 
 		try {
-			User_storage us = new User_storage(database.GetCollection("my_collection"));
+			User_storage us = new User_storage(database);
 			
 			assertNotThrown(us.create_user("name", "pass"));
 			assertNotThrown(us.create_user("name", "pass"));
 			
 			Bson query = Bson(["username" : Bson("name")]);
-			auto result = database.GetCollection("my_collection").find(query);
+			auto result = database.GetCollection("user").find(query);
 			JSONValue json = parseJSON(to!string(result));
 			assertEqual(1, json.array.length);
 		}
 		finally {
-			database.ClearCollection("my_collection");
+			database.ClearCollection("user");
 		}
 	}
 
@@ -79,7 +81,7 @@ class User_storage {
 		Database database = GetDatabase();
 
 		try {
-			User_storage us = new User_storage(database.GetCollection("my_collection"));
+			User_storage us = new User_storage(database);
 			auto username = "name"; 
 			us.create_user("wrong", "");
 			us.create_user(username, "");
@@ -88,7 +90,7 @@ class User_storage {
 			assertEqual(obj["username"].get!string, username);
 		}
 		finally {
-			database.ClearCollection("my_collection");
+			database.ClearCollection("user");
 		}
 	}
 
@@ -97,13 +99,13 @@ class User_storage {
 		Database database = GetDatabase();
 
 		try {
-			User_storage us = new User_storage(database.GetCollection("my_collection"));
+			User_storage us = new User_storage(database);
 			auto username = "name"; 
 			auto obj = us.get_user_by_name(username);
 			assertEqual(obj, Bson(null));
 		}
 		finally {
-			database.ClearCollection("my_collection");
+			database.ClearCollection("user");
 		}
 	}
 
@@ -118,7 +120,7 @@ class User_storage {
 		Database database = GetDatabase();
 
 		try {
-			User_storage us = new User_storage(database.GetCollection("my_collection"));
+			User_storage us = new User_storage(database);
 			auto username = "name"; 
 			us.create_user("wrong", "");
 			us.create_user(username, "");
@@ -132,7 +134,7 @@ class User_storage {
 			assertEqual(objid["username"].get!string, username);
 		}
 		finally {
-			database.ClearCollection("my_collection");
+			database.ClearCollection("user");
 		}
 	}
 

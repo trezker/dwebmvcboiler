@@ -1,0 +1,1 @@
+mongo localhost:27017/my_database initdb.js

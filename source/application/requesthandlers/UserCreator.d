@@ -63,7 +63,7 @@ class UserCreator: RequestHandler {
 		
 		try {
 			UserCreator m = new UserCreator;
-			m.setup(new User_storage(database.GetCollection("my_collection")));
+			m.setup(new User_storage(database));
 
 			HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest);
 
@@ -81,7 +81,7 @@ class UserCreator: RequestHandler {
 		
 		try {
 			UserCreator m = new UserCreator;
-			m.setup(new User_storage(database.GetCollection("my_collection")));
+			m.setup(new User_storage(database));
 			JSONValue jsoninput;
 			jsoninput["username"] = "testname";
 			jsoninput["password"] = "testpass";
