@@ -71,7 +71,7 @@ class UserCreator: RequestHandler {
 			assert(json["success"] == JSONValue(false));
 		}
 		finally {
-			database.ClearCollection("my_collection");
+			database.ClearCollection("user");
 		}
 	}
 
@@ -92,7 +92,7 @@ class UserCreator: RequestHandler {
 			assert(jsonoutput["success"] == JSONValue(true));
 		}
 		finally {
-			database.ClearCollection("my_collection");
+			database.ClearCollection("user");
 		}
 	}
 }
