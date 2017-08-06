@@ -2,6 +2,7 @@ module application.LoginHandler;
 
 import std.json;
 import std.stdio;
+import dauth;
 import vibe.http.server;
 import vibe.db.mongo.mongo;
 
@@ -34,7 +35,7 @@ class LoginHandler: RequestHandler {
 			}
 
 			//Verify password
-			if(obj["password"].get!string != password) {
+			if(!isSameHash(toPassword(password.dup), parseHash(obj["password"].get!string))) {
 				JSONValue json;
 				json["success"] = false;
 				json["info"] = "Invalid login password";

@@ -2,6 +2,7 @@ module application.UserCreator;
 
 import std.json;
 import std.stdio;
+import dauth;
 import vibe.http.server;
 import vibe.db.mongo.mongo;
 
@@ -9,6 +10,7 @@ import boiler.HttpHandlerTester;
 import boiler.Ajax;
 import application.storage.user;
 import application.database;
+import boiler.helpers;
 
 class UserCreator: RequestHandler {
 	User_storage user_storage;
@@ -41,7 +43,8 @@ class UserCreator: RequestHandler {
 				return;
 			}
 
-			user_storage.create_user(username, password);
+			string hashedPassword = makeHash(toPassword(password.dup)).toString();
+			user_storage.create_user(username, hashedPassword);
 
 			//Write result
 			JSONValue json;
@@ -90,6 +93,31 @@ class UserCreator: RequestHandler {
 
 			JSONValue jsonoutput = tester.get_response_json();
 			assert(jsonoutput["success"] == JSONValue(true));
+		}
+		finally {
+			database.ClearCollection("user");
+		}
+	}
+
+	//Created user should have a hashed password
+	unittest {
+		Database database = GetDatabase();
+		
+		try {
+			string username = "testname";
+			string password = "testpass";
+
+			UserCreator m = new UserCreator;
+			auto user_storage = new User_storage(database);
+			m.setup(user_storage);
+			JSONValue jsoninput;
+			jsoninput["username"] = username;
+			jsoninput["password"] = password;
+
+			HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
+			
+			auto obj = user_storage.get_user_by_name(username);
+			assert(isSameHash(toPassword(password.dup), parseHash(obj["password"].get!string)));
 		}
 		finally {
 			database.ClearCollection("user");
