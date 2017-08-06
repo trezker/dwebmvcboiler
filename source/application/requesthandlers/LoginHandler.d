@@ -34,6 +34,13 @@ class LoginHandler: RequestHandler {
 			}
 
 			//Verify password
+			if(obj["password"].get!string != password) {
+				JSONValue json;
+				json["success"] = false;
+				json["info"] = "Invalid login password";
+				res.writeBody(json.toString, 200);
+				return;
+			}
 
 			//Initiate session
 
@@ -104,6 +111,31 @@ class LoginHandler: RequestHandler {
 			JSONValue jsoninput;
 			jsoninput["username"] = "testname";
 			jsoninput["password"] = "testpass";
+
+			HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
+
+			JSONValue json = tester.get_response_json();
+			assert(json["success"] == JSONValue(true));
+		}
+		finally {
+			database.ClearCollection("user");
+		}
+	}
+
+	//Login user with incorrect password should fail
+	unittest {
+		import application.testhelpers;
+
+		Database database = GetDatabase();
+		
+		try {
+			CreateTestUser("testname", "testpass");
+
+			LoginHandler m = new LoginHandler;
+			m.setup(new User_storage(database));
+			JSONValue jsoninput;
+			jsoninput["username"] = "testname";
+			jsoninput["password"] = "wrong";
 
 			HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
 
