@@ -89,4 +89,29 @@ class LoginHandler: RequestHandler {
 			database.ClearCollection("user");
 		}
 	}
+
+	//Login user with correct parameters should succeed
+	unittest {
+		import application.testhelpers;
+
+		Database database = GetDatabase();
+		
+		try {
+			CreateTestUser("testname", "testpass");
+
+			LoginHandler m = new LoginHandler;
+			m.setup(new User_storage(database));
+			JSONValue jsoninput;
+			jsoninput["username"] = "testname";
+			jsoninput["password"] = "testpass";
+
+			HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
+
+			JSONValue json = tester.get_response_json();
+			assert(json["success"] == JSONValue(false));
+		}
+		finally {
+			database.ClearCollection("user");
+		}
+	}
 }
