@@ -44,11 +44,9 @@ class LoginHandler: RequestHandler {
 			}
 
 			//Initiate session
-			/*
 			auto session = res.startSession();
-			string user_id = user["_id"].as!string;
-			session.set("id", user_id);
-			*/
+			//string user_id = user["_id"].as!string;
+			//session.set("id", "user_id");
 
 			//Write result
 			JSONValue json;
@@ -125,7 +123,7 @@ class LoginHandler: RequestHandler {
 			//string id = tester.Get_result_session_value!string("id");
 			//assertNotEqual(id, "");
 			string[] t = tester.getResponseLines();
-			writeln(t);
+			//writeln(t);
 		}
 		finally {
 			database.ClearCollection("user");

@@ -10,6 +10,8 @@ import vibe.inet.message;
 import vibe.stream.memory;
 import vibe.stream.operations;
 import std.json;
+import std.stdio;
+import std.algorithm;
 
 class HTTPHandlerTester {
 	HTTPServerRequest req;
@@ -62,8 +64,9 @@ class HTTPHandlerTester {
 	}
 
 	private void call_handler(Request_delegate handler) {
+		SessionStore sessionstore = new MemorySessionStore ();
 		response_stream = new MemoryStream(outputdata);
-		res = createTestHTTPServerResponse(response_stream);//SessionStore session_store = null)
+		res = createTestHTTPServerResponse(response_stream, sessionstore);
 		handler(req, res);
 		//res.finalize;
 	}
@@ -71,6 +74,28 @@ class HTTPHandlerTester {
 	public JSONValue get_response_json() {
 		auto lines = getResponseLines();
 		return parseJSON(lines[$-1]);
+	}
+
+	public string GetResponseSessionID() {
+		auto lines = getResponseLines();
+		bool pred(string x) { return x.indexOf("session_id") != -1; }
+		auto session_lines = find!(pred)(lines);
+		if(session_lines.length > 0) {
+			string sessionCookieLine = session_lines[0];
+			return sessionCookieLine[(indexOf(sessionCookieLine, "=")+1)..indexOf(sessionCookieLine, ";")];
+		}
+		else {
+			return "";
+		}
+	}
+
+	//When testing a handler that sets session values you should be able to read them
+	unittest {
+		auto dummy = new SessionDummyHandler();
+		
+		auto tester = new HTTPHandlerTester(&dummy.handleRequest);
+
+		assertNotEqual(tester.GetResponseSessionID(), "");
 	}
 
 	public string[] getResponseLines() {
@@ -108,5 +133,13 @@ class JsonInputDummyHandler {
 		if(req.json["data"].to!int == 4) {
 			receivedJson = true;
 		}
+	}
+}
+
+class SessionDummyHandler {
+	void handleRequest(HTTPServerRequest req, HTTPServerResponse res) {
+		auto session = res.startSession();
+		session.set("testkey", "testvalue");
+		res.writeBody("body", 200);
 	}
 }
