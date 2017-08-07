@@ -44,6 +44,11 @@ class LoginHandler: RequestHandler {
 			}
 
 			//Initiate session
+			/*
+			auto session = res.startSession();
+			string user_id = user["_id"].as!string;
+			session.set("id", user_id);
+			*/
 
 			//Write result
 			JSONValue json;
@@ -98,7 +103,7 @@ class LoginHandler: RequestHandler {
 		}
 	}
 
-	//Login user with correct parameters should succeed
+	//Login user with correct parameters should succeed and set user id in session
 	unittest {
 		import application.testhelpers;
 
@@ -117,6 +122,10 @@ class LoginHandler: RequestHandler {
 
 			JSONValue json = tester.get_response_json();
 			assert(json["success"] == JSONValue(true));
+			//string id = tester.Get_result_session_value!string("id");
+			//assertNotEqual(id, "");
+			string[] t = tester.getResponseLines();
+			writeln(t);
 		}
 		finally {
 			database.ClearCollection("user");

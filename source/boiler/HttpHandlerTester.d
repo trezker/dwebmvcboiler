@@ -68,16 +68,21 @@ class HTTPHandlerTester {
 		//res.finalize;
 	}
 
-	public string[] getResponseLines() {
-		response_stream.seek(0);
- 		string rawResponse = response_stream.readAllUTF8();
-		return rawResponse.splitLines();
-	}
-
 	public JSONValue get_response_json() {
 		auto lines = getResponseLines();
 		return parseJSON(lines[$-1]);
 	}
+
+	public string[] getResponseLines() {
+		response_stream.seek(0);
+ 		string rawResponse = response_stream.readAllUTF8();
+ 		rawResponse = rawResponse[0..indexOf(rawResponse, "\0")];
+		return rawResponse.splitLines();
+	}
+
+	//public const(T) Get_result_session_value(T)(string key) {
+		//return res.session.get!T(key);
+	//}
 }
 
 class CallFlagDummyHandler {
