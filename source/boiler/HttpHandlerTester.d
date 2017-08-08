@@ -18,9 +18,11 @@ class HTTPHandlerTester {
 	HTTPServerResponse res;
 	MemoryStream response_stream;
 	ubyte[1000000] outputdata;
+	SessionStore sessionstore;
 
 	this(Request_delegate handler) {
 		req = createTestHTTPServerRequest(URL("http://localhost/test"), HTTPMethod.POST);//, InetHeaderMap headers, InputStream data = null)
+		sessionstore = new MemorySessionStore ();
 		call_handler(handler);
 	}
 
@@ -35,6 +37,7 @@ class HTTPHandlerTester {
 
 	this(Request_delegate handler, string input) {
 		PrepareJsonRequest(input);
+		sessionstore = new MemorySessionStore ();
 		call_handler(handler);
 	}
 
@@ -64,7 +67,6 @@ class HTTPHandlerTester {
 	}
 
 	private void call_handler(Request_delegate handler) {
-		SessionStore sessionstore = new MemorySessionStore ();
 		response_stream = new MemoryStream(outputdata);
 		res = createTestHTTPServerResponse(response_stream, sessionstore);
 		handler(req, res);
@@ -74,6 +76,12 @@ class HTTPHandlerTester {
 	public JSONValue get_response_json() {
 		auto lines = getResponseLines();
 		return parseJSON(lines[$-1]);
+	}
+
+	public const(T) GetResponseSessionValue(T)(string key) {
+		string sessionID = GetResponseSessionID();
+		Session session = sessionstore.open(sessionID);
+		return session.get!T(key);
 	}
 
 	public string GetResponseSessionID() {
@@ -96,6 +104,8 @@ class HTTPHandlerTester {
 		auto tester = new HTTPHandlerTester(&dummy.handleRequest);
 
 		assertNotEqual(tester.GetResponseSessionID(), "");
+		string value = tester.GetResponseSessionValue!string("testkey");
+		assertEqual(value, "testvalue");
 	}
 
 	public string[] getResponseLines() {
@@ -104,10 +114,6 @@ class HTTPHandlerTester {
  		rawResponse = rawResponse[0..indexOf(rawResponse, "\0")];
 		return rawResponse.splitLines();
 	}
-
-	//public const(T) Get_result_session_value(T)(string key) {
-		//return res.session.get!T(key);
-	//}
 }
 
 class CallFlagDummyHandler {
