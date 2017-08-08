@@ -8,6 +8,7 @@ import vibe.db.mongo.mongo;
 
 import boiler.HttpHandlerTester;
 import boiler.Ajax;
+import boiler.helpers;
 import application.storage.user;
 import application.database;
 
@@ -45,8 +46,9 @@ class LoginHandler: RequestHandler {
 
 			//Initiate session
 			auto session = res.startSession();
-			//string user_id = user["_id"].as!string;
-			//session.set("id", "user_id");
+			BsonObjectID oid = obj["_id"].get!BsonObjectID;
+			string userID = oid.toString();
+			session.set("id", userID);
 
 			//Write result
 			JSONValue json;
@@ -58,7 +60,7 @@ class LoginHandler: RequestHandler {
 			JSONValue json;
 			json["success"] = false;
 			res.writeBody(json.toString, 200);
-
+			//writeln(e);
 		}
 	}
 
@@ -120,10 +122,8 @@ class LoginHandler: RequestHandler {
 
 			JSONValue json = tester.get_response_json();
 			assert(json["success"] == JSONValue(true));
-			//string id = tester.Get_result_session_value!string("id");
-			//assertNotEqual(id, "");
-			string[] t = tester.getResponseLines();
-			//writeln(t);
+			string id = tester.GetResponseSessionValue!string("id");
+			assertNotEqual(id, "");
 		}
 		finally {
 			database.ClearCollection("user");
