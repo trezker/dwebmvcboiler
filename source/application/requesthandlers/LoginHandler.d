@@ -75,7 +75,7 @@ unittest {
 
 		HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest);
 
-		JSONValue json = tester.get_response_json();
+		JSONValue json = tester.GetResponseJson();
 		assert(json["success"] == JSONValue(false));
 	}
 	finally {
@@ -96,7 +96,7 @@ unittest {
 
 		HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
 
-		JSONValue json = tester.get_response_json();
+		JSONValue json = tester.GetResponseJson();
 		assert(json["success"] == JSONValue(false));
 	}
 	finally {
@@ -121,7 +121,7 @@ unittest {
 
 		HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
 
-		JSONValue json = tester.get_response_json();
+		JSONValue json = tester.GetResponseJson();
 		assert(json["success"] == JSONValue(true));
 		string id = tester.GetResponseSessionValue!string("id");
 		assertNotEqual(id, "");
@@ -148,7 +148,7 @@ unittest {
 
 		HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
 
-		JSONValue json = tester.get_response_json();
+		JSONValue json = tester.GetResponseJson();
 		assert(json["success"] == JSONValue(false));
 	}
 	finally {

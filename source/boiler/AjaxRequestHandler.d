@@ -34,37 +34,6 @@ class AjaxRequestHandler {
 			res.writeBody(json.toString, 200);
 		}
 	}
-
-	//Call without parameters should fail.
-	unittest {
-		AjaxRequestHandler handler = new AjaxRequestHandler();
-
-		HTTPHandlerTester tester = new HTTPHandlerTester(&handler.HandleRequest);
-
-		JSONValue json = tester.get_response_json();
-		assert(json["success"] == JSONValue(false));
-	}
-
-	//Call to method that doesn't exist should fail.
-	unittest {
-		AjaxRequestHandler handler = new AjaxRequestHandler();
-
-		HTTPHandlerTester tester = new HTTPHandlerTester(&handler.HandleRequest, "{\"method\": \"none\"}");
-
-		JSONValue json = tester.get_response_json();
-		assert(json["success"] == JSONValue(false));
-	}
-
-	//Call to method that exists should succeed.
-	unittest {
-		AjaxRequestHandler handler = new AjaxRequestHandler();
-		handler.SetHandler("test", new SuccessTestHandler);
-
-		HTTPHandlerTester tester = new HTTPHandlerTester(&handler.HandleRequest, "{\"method\": \"test\"}");
-
-		JSONValue json = tester.get_response_json();
-		assert(json["success"] == JSONValue(true));
-	}
 }
 
 class SuccessTestHandler : RequestHandler {
@@ -74,4 +43,35 @@ class SuccessTestHandler : RequestHandler {
 		res.writeBody(json.toString, 200);
 		return;
 	}
+}
+
+//Call without parameters should fail.
+unittest {
+	AjaxRequestHandler handler = new AjaxRequestHandler();
+
+	HTTPHandlerTester tester = new HTTPHandlerTester(&handler.HandleRequest);
+
+	JSONValue json = tester.GetResponseJson();
+	assert(json["success"] == JSONValue(false));
+}
+
+//Call to method that doesn't exist should fail.
+unittest {
+	AjaxRequestHandler handler = new AjaxRequestHandler();
+
+	HTTPHandlerTester tester = new HTTPHandlerTester(&handler.HandleRequest, "{\"method\": \"none\"}");
+
+	JSONValue json = tester.GetResponseJson();
+	assert(json["success"] == JSONValue(false));
+}
+
+//Call to method that exists should succeed.
+unittest {
+	AjaxRequestHandler handler = new AjaxRequestHandler();
+	handler.SetHandler("test", new SuccessTestHandler);
+
+	HTTPHandlerTester tester = new HTTPHandlerTester(&handler.HandleRequest, "{\"method\": \"test\"}");
+
+	JSONValue json = tester.GetResponseJson();
+	assert(json["success"] == JSONValue(true));
 }

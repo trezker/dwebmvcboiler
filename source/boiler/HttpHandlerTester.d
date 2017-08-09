@@ -14,22 +14,22 @@ import std.stdio;
 import std.algorithm;
 
 class HTTPHandlerTester {
-	HTTPServerRequest req;
-	HTTPServerResponse res;
+	HTTPServerRequest request;
+	HTTPServerResponse response;
 	MemoryStream response_stream;
 	ubyte[1000000] outputdata;
 	SessionStore sessionstore;
 
 	this(Request_delegate handler) {
-		req = createTestHTTPServerRequest(URL("http://localhost/test"), HTTPMethod.POST);//, InetHeaderMap headers, InputStream data = null)
+		request = createTestHTTPServerRequest(URL("http://localhost/test"), HTTPMethod.POST);
 		sessionstore = new MemorySessionStore ();
-		call_handler(handler);
+		CallHandler(handler);
 	}
 
 	this(Request_delegate handler, string input) {
 		PrepareJsonRequest(input);
 		sessionstore = new MemorySessionStore ();
-		call_handler(handler);
+		CallHandler(handler);
 	}
 
 	private void PrepareJsonRequest(string input) {
@@ -37,25 +37,24 @@ class HTTPHandlerTester {
 		headers["Content-Type"] = "application/json";
 
 		auto inputStream = createInputStreamFromString(input);
-		req = createTestHTTPServerRequest(URL("http://localhost/test"), HTTPMethod.POST, headers, inputStream);
-		populateRequestJson();
+		request = createTestHTTPServerRequest(URL("http://localhost/test"), HTTPMethod.POST, headers, inputStream);
+		PopulateRequestJson();
 	}
 
-	private void populateRequestJson() {
-		if (icmp2(req.contentType, "application/json") == 0 || icmp2(req.contentType, "application/vnd.api+json") == 0 ) {
-			auto bodyStr = () @trusted { return cast(string)req.bodyReader.readAll(); } ();
-			if (!bodyStr.empty) req.json = parseJson(bodyStr);
+	private void PopulateRequestJson() {
+		if (icmp2(request.contentType, "application/json") == 0 || icmp2(request.contentType, "application/vnd.api+json") == 0 ) {
+			auto bodyStr = () @trusted { return cast(string)request.bodyReader.readAll(); } ();
+			if (!bodyStr.empty) request.json = parseJson(bodyStr);
 		}
 	}
 
-	private void call_handler(Request_delegate handler) {
+	private void CallHandler(Request_delegate handler) {
 		response_stream = new MemoryStream(outputdata);
-		res = createTestHTTPServerResponse(response_stream, sessionstore);
-		handler(req, res);
-		//res.finalize;
+		response = createTestHTTPServerResponse(response_stream, sessionstore);
+		handler(request, response);
 	}
 
-	public JSONValue get_response_json() {
+	public JSONValue GetResponseJson() {
 		auto lines = getResponseLines();
 		return parseJSON(lines[$-1]);
 	}
@@ -94,7 +93,7 @@ class CallFlagDummyHandler {
 		called = false;
 	}
 
-	void handleRequest(HTTPServerRequest req, HTTPServerResponse res) {
+	void handleRequest(HTTPServerRequest request, HTTPServerResponse response) {
 		called = true;
 	}
 }
@@ -106,18 +105,18 @@ class JsonInputDummyHandler {
 		receivedJson = false;
 	}
 
-	void handleRequest(HTTPServerRequest req, HTTPServerResponse res) {
-		if(req.json["data"].to!int == 4) {
+	void handleRequest(HTTPServerRequest request, HTTPServerResponse response) {
+		if(request.json["data"].to!int == 4) {
 			receivedJson = true;
 		}
 	}
 }
 
 class SessionDummyHandler {
-	void handleRequest(HTTPServerRequest req, HTTPServerResponse res) {
-		auto session = res.startSession();
+	void handleRequest(HTTPServerRequest request, HTTPServerResponse response) {
+		auto session = response.startSession();
 		session.set("testkey", "testvalue");
-		res.writeBody("body", 200);
+		response.writeBody("body", 200);
 	}
 }
 

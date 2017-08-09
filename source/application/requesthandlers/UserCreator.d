@@ -71,7 +71,7 @@ unittest {
 
 		HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest);
 
-		JSONValue json = tester.get_response_json();
+		JSONValue json = tester.GetResponseJson();
 		assert(json["success"] == JSONValue(false));
 	}
 	finally {
@@ -92,7 +92,7 @@ unittest {
 
 		HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
 
-		JSONValue jsonoutput = tester.get_response_json();
+		JSONValue jsonoutput = tester.GetResponseJson();
 		assert(jsonoutput["success"] == JSONValue(true));
 	}
 	finally {
