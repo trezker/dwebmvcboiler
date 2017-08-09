@@ -63,95 +63,95 @@ class LoginHandler: RequestHandler {
 			//writeln(e);
 		}
 	}
+}
 
-	//Login user without parameters should fail
-	unittest {
-		Database database = GetDatabase();
-		
-		try {
-			LoginHandler m = new LoginHandler;
-			m.setup(new User_storage(database));
+//Login user without parameters should fail
+unittest {
+	Database database = GetDatabase();
+	
+	try {
+		LoginHandler m = new LoginHandler;
+		m.setup(new User_storage(database));
 
-			HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest);
+		HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest);
 
-			JSONValue json = tester.get_response_json();
-			assert(json["success"] == JSONValue(false));
-		}
-		finally {
-			database.ClearCollection("user");
-		}
+		JSONValue json = tester.get_response_json();
+		assert(json["success"] == JSONValue(false));
 	}
-
-	//Login user that doesn't exist should fail
-	unittest {
-		Database database = GetDatabase();
-		
-		try {
-			LoginHandler m = new LoginHandler;
-			m.setup(new User_storage(database));
-			JSONValue jsoninput;
-			jsoninput["username"] = "testname";
-			jsoninput["password"] = "testpass";
-
-			HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
-
-			JSONValue json = tester.get_response_json();
-			assert(json["success"] == JSONValue(false));
-		}
-		finally {
-			database.ClearCollection("user");
-		}
+	finally {
+		database.ClearCollection("user");
 	}
+}
 
-	//Login user with correct parameters should succeed and set user id in session
-	unittest {
-		import application.testhelpers;
+//Login user that doesn't exist should fail
+unittest {
+	Database database = GetDatabase();
+	
+	try {
+		LoginHandler m = new LoginHandler;
+		m.setup(new User_storage(database));
+		JSONValue jsoninput;
+		jsoninput["username"] = "testname";
+		jsoninput["password"] = "testpass";
 
-		Database database = GetDatabase();
-		
-		try {
-			CreateTestUser("testname", "testpass");
+		HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
 
-			LoginHandler m = new LoginHandler;
-			m.setup(new User_storage(database));
-			JSONValue jsoninput;
-			jsoninput["username"] = "testname";
-			jsoninput["password"] = "testpass";
-
-			HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
-
-			JSONValue json = tester.get_response_json();
-			assert(json["success"] == JSONValue(true));
-			string id = tester.GetResponseSessionValue!string("id");
-			assertNotEqual(id, "");
-		}
-		finally {
-			database.ClearCollection("user");
-		}
+		JSONValue json = tester.get_response_json();
+		assert(json["success"] == JSONValue(false));
 	}
+	finally {
+		database.ClearCollection("user");
+	}
+}
 
-	//Login user with incorrect password should fail
-	unittest {
-		import application.testhelpers;
+//Login user with correct parameters should succeed and set user id in session
+unittest {
+	import application.testhelpers;
 
-		Database database = GetDatabase();
-		
-		try {
-			CreateTestUser("testname", "testpass");
+	Database database = GetDatabase();
+	
+	try {
+		CreateTestUser("testname", "testpass");
 
-			LoginHandler m = new LoginHandler;
-			m.setup(new User_storage(database));
-			JSONValue jsoninput;
-			jsoninput["username"] = "testname";
-			jsoninput["password"] = "wrong";
+		LoginHandler m = new LoginHandler;
+		m.setup(new User_storage(database));
+		JSONValue jsoninput;
+		jsoninput["username"] = "testname";
+		jsoninput["password"] = "testpass";
 
-			HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
+		HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
 
-			JSONValue json = tester.get_response_json();
-			assert(json["success"] == JSONValue(false));
-		}
-		finally {
-			database.ClearCollection("user");
-		}
+		JSONValue json = tester.get_response_json();
+		assert(json["success"] == JSONValue(true));
+		string id = tester.GetResponseSessionValue!string("id");
+		assertNotEqual(id, "");
+	}
+	finally {
+		database.ClearCollection("user");
+	}
+}
+
+//Login user with incorrect password should fail
+unittest {
+	import application.testhelpers;
+
+	Database database = GetDatabase();
+	
+	try {
+		CreateTestUser("testname", "testpass");
+
+		LoginHandler m = new LoginHandler;
+		m.setup(new User_storage(database));
+		JSONValue jsoninput;
+		jsoninput["username"] = "testname";
+		jsoninput["password"] = "wrong";
+
+		HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
+
+		JSONValue json = tester.get_response_json();
+		assert(json["success"] == JSONValue(false));
+	}
+	finally {
+		database.ClearCollection("user");
 	}
 }

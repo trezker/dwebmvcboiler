@@ -26,28 +26,10 @@ class HTTPHandlerTester {
 		call_handler(handler);
 	}
 
-	//Creating a tester with handler calls the handler.
-	unittest {
-		auto dummy = new CallFlagDummyHandler();
-		
-		auto tester = new HTTPHandlerTester(&dummy.handleRequest);
-
-		assert(dummy.called);
-	}
-
 	this(Request_delegate handler, string input) {
 		PrepareJsonRequest(input);
 		sessionstore = new MemorySessionStore ();
 		call_handler(handler);
-	}
-
-	//Creating a tester with json post data should give the handler access to the data.
-	unittest {
-		auto dummy = new JsonInputDummyHandler();
-		
-		auto tester = new HTTPHandlerTester(&dummy.handleRequest, "{ \"data\": 4 }");
-
-		assert(dummy.receivedJson);
 	}
 
 	private void PrepareJsonRequest(string input) {
@@ -97,17 +79,6 @@ class HTTPHandlerTester {
 		}
 	}
 
-	//When testing a handler that sets session values you should be able to read them
-	unittest {
-		auto dummy = new SessionDummyHandler();
-		
-		auto tester = new HTTPHandlerTester(&dummy.handleRequest);
-
-		assertNotEqual(tester.GetResponseSessionID(), "");
-		string value = tester.GetResponseSessionValue!string("testkey");
-		assertEqual(value, "testvalue");
-	}
-
 	public string[] getResponseLines() {
 		response_stream.seek(0);
  		string rawResponse = response_stream.readAllUTF8();
@@ -148,4 +119,33 @@ class SessionDummyHandler {
 		session.set("testkey", "testvalue");
 		res.writeBody("body", 200);
 	}
+}
+
+//Creating a tester with handler calls the handler.
+unittest {
+	auto dummy = new CallFlagDummyHandler();
+	
+	auto tester = new HTTPHandlerTester(&dummy.handleRequest);
+
+	assert(dummy.called);
+}
+
+//Creating a tester with json post data should give the handler access to the data.
+unittest {
+	auto dummy = new JsonInputDummyHandler();
+	
+	auto tester = new HTTPHandlerTester(&dummy.handleRequest, "{ \"data\": 4 }");
+
+	assert(dummy.receivedJson);
+}
+
+//When testing a handler that sets session values you should be able to read them
+unittest {
+	auto dummy = new SessionDummyHandler();
+	
+	auto tester = new HTTPHandlerTester(&dummy.handleRequest);
+
+	assertNotEqual(tester.GetResponseSessionID(), "");
+	string value = tester.GetResponseSessionValue!string("testkey");
+	assertEqual(value, "testvalue");
 }

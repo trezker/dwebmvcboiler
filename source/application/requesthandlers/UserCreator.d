@@ -59,68 +59,68 @@ class UserCreator: RequestHandler {
 
 		}
 	}
+}
 
-	//Create user without parameters should fail.
-	unittest {
-		Database database = GetDatabase();
-		
-		try {
-			UserCreator m = new UserCreator;
-			m.setup(new User_storage(database));
+//Create user without parameters should fail.
+unittest {
+	Database database = GetDatabase();
+	
+	try {
+		UserCreator m = new UserCreator;
+		m.setup(new User_storage(database));
 
-			HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest);
+		HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest);
 
-			JSONValue json = tester.get_response_json();
-			assert(json["success"] == JSONValue(false));
-		}
-		finally {
-			database.ClearCollection("user");
-		}
+		JSONValue json = tester.get_response_json();
+		assert(json["success"] == JSONValue(false));
 	}
-
-	//Create user with name and password should succeed
-	unittest {
-		Database database = GetDatabase();
-		
-		try {
-			UserCreator m = new UserCreator;
-			m.setup(new User_storage(database));
-			JSONValue jsoninput;
-			jsoninput["username"] = "testname";
-			jsoninput["password"] = "testpass";
-
-			HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
-
-			JSONValue jsonoutput = tester.get_response_json();
-			assert(jsonoutput["success"] == JSONValue(true));
-		}
-		finally {
-			database.ClearCollection("user");
-		}
+	finally {
+		database.ClearCollection("user");
 	}
+}
 
-	//Created user should have a hashed password
-	unittest {
-		Database database = GetDatabase();
+//Create user with name and password should succeed
+unittest {
+	Database database = GetDatabase();
+	
+	try {
+		UserCreator m = new UserCreator;
+		m.setup(new User_storage(database));
+		JSONValue jsoninput;
+		jsoninput["username"] = "testname";
+		jsoninput["password"] = "testpass";
+
+		HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
+
+		JSONValue jsonoutput = tester.get_response_json();
+		assert(jsonoutput["success"] == JSONValue(true));
+	}
+	finally {
+		database.ClearCollection("user");
+	}
+}
+
+//Created user should have a hashed password
+unittest {
+	Database database = GetDatabase();
+	
+	try {
+		string username = "testname";
+		string password = "testpass";
+
+		UserCreator m = new UserCreator;
+		auto user_storage = new User_storage(database);
+		m.setup(user_storage);
+		JSONValue jsoninput;
+		jsoninput["username"] = username;
+		jsoninput["password"] = password;
+
+		HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
 		
-		try {
-			string username = "testname";
-			string password = "testpass";
-
-			UserCreator m = new UserCreator;
-			auto user_storage = new User_storage(database);
-			m.setup(user_storage);
-			JSONValue jsoninput;
-			jsoninput["username"] = username;
-			jsoninput["password"] = password;
-
-			HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
-			
-			auto obj = user_storage.get_user_by_name(username);
-			assert(isSameHash(toPassword(password.dup), parseHash(obj["password"].get!string)));
-		}
-		finally {
-			database.ClearCollection("user");
-		}
+		auto obj = user_storage.get_user_by_name(username);
+		assert(isSameHash(toPassword(password.dup), parseHash(obj["password"].get!string)));
+	}
+	finally {
+		database.ClearCollection("user");
 	}
 }
