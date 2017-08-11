@@ -19,16 +19,29 @@ class HTTPHandlerTester {
 	MemoryStream response_stream;
 	ubyte[1000000] outputdata;
 	SessionStore sessionstore;
+	string sessionID;
 
 	this(Request_delegate handler) {
-		request = createTestHTTPServerRequest(URL("http://localhost/test"), HTTPMethod.POST);
 		sessionstore = new MemorySessionStore ();
-		CallHandler(handler);
+		Request(handler);
 	}
 
 	this(Request_delegate handler, string input) {
-		PrepareJsonRequest(input);
 		sessionstore = new MemorySessionStore ();
+		Request(handler, input);
+	}
+
+	public void Request(Request_delegate handler) {
+		InetHeaderMap headers;
+		if(sessionID != null) {
+			headers["Cookie"] = "vibe.session_id=" ~ sessionID;
+		}
+		request = createTestHTTPServerRequest(URL("http://localhost/test"), HTTPMethod.POST, headers);
+		CallHandler(handler);
+	}
+
+	public void Request(Request_delegate handler, string input) {
+		PrepareJsonRequest(input);
 		CallHandler(handler);
 	}
 
@@ -36,12 +49,17 @@ class HTTPHandlerTester {
 		InetHeaderMap headers;
 		headers["Content-Type"] = "application/json";
 
+		if(sessionID != null) {
+			headers["Cookie"] = "vibe.session_id=" ~ sessionID;
+		}
+
 		auto inputStream = createInputStreamFromString(input);
 		request = createTestHTTPServerRequest(URL("http://localhost/test"), HTTPMethod.POST, headers, inputStream);
 		PopulateRequestJson();
 	}
 
 	private void PopulateRequestJson() {
+		// NOTICE: Code lifted from vibe.d source handleRequest
 		if (icmp2(request.contentType, "application/json") == 0 || icmp2(request.contentType, "application/vnd.api+json") == 0 ) {
 			auto bodyStr = () @trusted { return cast(string)request.bodyReader.readAll(); } ();
 			if (!bodyStr.empty) request.json = parseJson(bodyStr);
@@ -51,11 +69,43 @@ class HTTPHandlerTester {
 	private void CallHandler(Request_delegate handler) {
 		response_stream = new MemoryStream(outputdata);
 		response = createTestHTTPServerResponse(response_stream, sessionstore);
+		SetSessionFromCookie();
 		handler(request, response);
+		sessionID = GetResponseSessionID();
+	}
+
+	private void SetSessionFromCookie() {
+		// NOTICE: Code lifted from vibe.d source handleRequest
+		// use the first cookie that contains a valid session ID in case
+		// of multiple matching session cookies
+		auto pv = "cookie" in request.headers;
+		if (pv) parseCookies(*pv, request.cookies);
+		foreach (val; request.cookies.getAll("vibe.session_id")) {
+			request.session = sessionstore.open(val);
+			//response.m_session = request.session;
+			if (request.session) break;
+		}
+	}
+	
+	// NOTICE: Code lifted from vibe.d source handleRequest
+	private void parseCookies(string str, ref CookieValueMap cookies)
+	@safe {
+		import std.encoding : sanitize;
+		import std.array : split;
+		import std.string : strip;
+		import std.algorithm.iteration : map, filter, each;
+		import vibe.http.common : Cookie;
+		() @trusted { 
+			() @trusted { return str.sanitize; } ()
+				.split(";")
+				.map!(kv => kv.strip.split("="))
+				.filter!(kv => kv.length == 2) //ignore illegal cookies
+				.each!(kv => cookies.add(kv[0], kv[1], Cookie.Encoding.raw) );
+		} ();
 	}
 
 	public JSONValue GetResponseJson() {
-		auto lines = getResponseLines();
+		auto lines = GetResponseLines();
 		return parseJSON(lines[$-1]);
 	}
 
@@ -66,7 +116,7 @@ class HTTPHandlerTester {
 	}
 
 	public string GetResponseSessionID() {
-		auto lines = getResponseLines();
+		auto lines = GetResponseLines();
 		bool pred(string x) { return x.indexOf("session_id") != -1; }
 		auto session_lines = find!(pred)(lines);
 		if(session_lines.length > 0) {
@@ -74,11 +124,11 @@ class HTTPHandlerTester {
 			return sessionCookieLine[(indexOf(sessionCookieLine, "=")+1)..indexOf(sessionCookieLine, ";")];
 		}
 		else {
-			return "";
+			return null;
 		}
 	}
 
-	public string[] getResponseLines() {
+	public string[] GetResponseLines() {
 		response_stream.seek(0);
  		string rawResponse = response_stream.readAllUTF8();
  		rawResponse = rawResponse[0..indexOf(rawResponse, "\0")];
@@ -120,6 +170,24 @@ class SessionDummyHandler {
 	}
 }
 
+class RequestSessionDummyHandler {
+	public bool sessionok;
+
+	this() {
+		sessionok = false;
+	}
+
+	void handleRequest(HTTPServerRequest request, HTTPServerResponse response) {
+		if(!request.session) {
+			return;
+		}
+		auto id = request.session.get!string("testkey");
+		if(id == "testvalue") {
+			sessionok = true;
+		}
+	}
+}
+
 //Creating a tester with handler calls the handler.
 unittest {
 	auto dummy = new CallFlagDummyHandler();
@@ -144,7 +212,21 @@ unittest {
 	
 	auto tester = new HTTPHandlerTester(&dummy.handleRequest);
 
-	assertNotEqual(tester.GetResponseSessionID(), "");
+	assertNotEqual(tester.GetResponseSessionID(), null);
 	string value = tester.GetResponseSessionValue!string("testkey");
 	assertEqual(value, "testvalue");
+}
+
+//Subsequent calls after session value is set should have that session in request
+unittest {
+	auto responsesessinohandler = new SessionDummyHandler();
+	auto tester = new HTTPHandlerTester(&responsesessinohandler.handleRequest);
+
+	auto requestsessionhandler = new RequestSessionDummyHandler();
+	tester.Request(&requestsessionhandler.handleRequest);
+
+	requestsessionhandler = new RequestSessionDummyHandler();
+	tester.Request(&requestsessionhandler.handleRequest);
+
+	assert(requestsessionhandler.sessionok);
 }
