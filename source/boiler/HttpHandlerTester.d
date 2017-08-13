@@ -67,6 +67,9 @@ class HTTPHandlerTester {
 	}
 
 	private void CallHandler(Request_delegate handler) {
+		for(int i = 0; outputdata[i] != 0; ++i) {
+			outputdata[i] = 0;
+		}
 		response_stream = new MemoryStream(outputdata);
 		response = createTestHTTPServerResponse(response_stream, sessionstore);
 		SetSessionFromCookie();
@@ -111,6 +114,9 @@ class HTTPHandlerTester {
 
 	public const(T) GetResponseSessionValue(T)(string key) {
 		string sessionID = GetResponseSessionID();
+		if(sessionID == null) {
+			return T.init;
+		}
 		Session session = sessionstore.open(sessionID);
 		return session.get!T(key);
 	}
@@ -178,13 +184,13 @@ class RequestSessionDummyHandler {
 	}
 
 	void handleRequest(HTTPServerRequest request, HTTPServerResponse response) {
-		if(!request.session) {
-			return;
+		if(request.session) {
+			auto id = request.session.get!string("testkey");
+			if(id == "testvalue") {
+				sessionok = true;
+			}
 		}
-		auto id = request.session.get!string("testkey");
-		if(id == "testvalue") {
-			sessionok = true;
-		}
+		response.writeBody("body", 200);
 	}
 }
 
@@ -224,9 +230,10 @@ unittest {
 
 	auto requestsessionhandler = new RequestSessionDummyHandler();
 	tester.Request(&requestsessionhandler.handleRequest);
-
+		writeln(tester.GetResponseLines());
+/*
 	requestsessionhandler = new RequestSessionDummyHandler();
 	tester.Request(&requestsessionhandler.handleRequest);
-
+*/
 	assert(requestsessionhandler.sessionok);
 }
