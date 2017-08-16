@@ -17,12 +17,14 @@ import boiler.Ajax;
 import vibe.http.fileserver;
 
 import application.application;
+import boiler.HttpRequest;
 
 class Server {
 private:
 	Model_method[string][string] models;
 	Application application;
 	AjaxRequestHandler ajaxRequestHandler;
+	SessionStore sessionstore;
 public:
 	bool setup() {
 		ajaxRequestHandler = new AjaxRequestHandler();
@@ -34,6 +36,7 @@ public:
 
 		application.setup_models(models);
 		application.SetupAjaxMethods(ajaxRequestHandler);
+		sessionstore = new MemorySessionStore ();
 		return true;
 	}
 
@@ -50,7 +53,8 @@ public:
 			string model = splitpath[2];
 			string method = splitpath[3];
 			if(model in models && method in models[model]) {
-				models[model][method].call (req, res);
+				HttpRequest request = CreateHttpRequestFromVibeHttpRequest(req, sessionstore);
+				models[model][method].call (request, res);
 			}
 		}
 		catch(Exception e) {
@@ -63,7 +67,8 @@ public:
 			string model = req.json["model"].to!string;
 			string method = req.json["method"].to!string;
 			if(model in models && method in models[model]) {
-				models[model][method].call (req, res);
+				HttpRequest request = CreateHttpRequestFromVibeHttpRequest(req, sessionstore);
+				models[model][method].call (request, res);
 			}
 			else {
 				res.writeJsonBody("Model/method does not exist");

@@ -1,12 +1,14 @@
 module boiler.Ajax;
 
+import std.json;
+import vibe.http.server;
+
 import boiler.HttpHandlerTester;
 import boiler.model;
-import vibe.http.server;
-import std.json;
+import boiler.HttpRequest;
 
 interface RequestHandler {
-	public void HandleRequest(HTTPServerRequest req, HTTPServerResponse res);
+	public void HandleRequest(HttpRequest req, HTTPServerResponse res);
 }
 
 class AjaxRequestHandler {
@@ -16,9 +18,9 @@ class AjaxRequestHandler {
 		handlers[name] = handler;
 	}
 
-	public void HandleRequest(HTTPServerRequest req, HTTPServerResponse res) {
+	public void HandleRequest(HttpRequest req, HTTPServerResponse res) {
 		try {
-			string method = req.json["method"].to!string;
+			string method = req.json["method"].str;
 			if(method in handlers) {
 				handlers[method].HandleRequest (req, res);
 			}
@@ -37,7 +39,7 @@ class AjaxRequestHandler {
 }
 
 class SuccessTestHandler : RequestHandler {
-	public void HandleRequest(HTTPServerRequest req, HTTPServerResponse res) {
+	public void HandleRequest(HttpRequest req, HTTPServerResponse res) {
 		JSONValue json;
 		json["success"] = true;
 		res.writeBody(json.toString, 200);

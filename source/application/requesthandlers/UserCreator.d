@@ -11,6 +11,7 @@ import boiler.Ajax;
 import application.storage.user;
 import application.database;
 import boiler.helpers;
+import boiler.HttpRequest;
 
 class UserCreator: RequestHandler {
 	User_storage user_storage;
@@ -19,7 +20,7 @@ class UserCreator: RequestHandler {
 		this.user_storage = user_storage;
 	}	
 
-	void HandleRequest(HTTPServerRequest req, HTTPServerResponse res) {
+	void HandleRequest(HttpRequest req, HTTPServerResponse res) {
 		//Total remake.
 		//Each request handler should be an object by itself.
 		//There should be a factory to provide a handler for each request.
@@ -30,8 +31,8 @@ class UserCreator: RequestHandler {
 
 		try {
 			//Read parameters
-			string username = req.json["username"].to!string;
-			string password = req.json["password"].to!string;
+			string username = req.json["username"].str;
+			string password = req.json["password"].str;
 
 			//Check that username is not taken
 			auto obj = user_storage.get_user_by_name(username);

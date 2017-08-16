@@ -12,6 +12,8 @@ import boiler.helpers;
 import application.storage.user;
 import application.database;
 
+import boiler.HttpRequest;
+
 class LoginHandler: RequestHandler {
 	User_storage user_storage;
 
@@ -19,11 +21,11 @@ class LoginHandler: RequestHandler {
 		this.user_storage = user_storage;
 	}	
 
-	void HandleRequest(HTTPServerRequest req, HTTPServerResponse res) {
+	void HandleRequest(HttpRequest req, HTTPServerResponse res) {
 		try {
 			//Read parameters
-			string username = req.json["username"].to!string;
-			string password = req.json["password"].to!string;
+			string username = req.json["username"].str;
+			string password = req.json["password"].str;
 
 			//Get user
 			auto obj = user_storage.get_user_by_name(username);

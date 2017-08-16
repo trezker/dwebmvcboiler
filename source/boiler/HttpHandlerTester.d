@@ -1,7 +1,8 @@
 module boiler.HttpHandlerTester;
 
-import boiler.model;
-import boiler.helpers;
+import std.json;
+import std.stdio;
+import std.algorithm;
 import vibe.inet.url;
 import vibe.data.json;
 import vibe.http.server;
@@ -9,13 +10,21 @@ import vibe.utils.string;
 import vibe.inet.message;
 import vibe.stream.memory;
 import vibe.stream.operations;
-import std.json;
-import std.stdio;
-import std.algorithm;
+
+import boiler.model;
+import boiler.helpers;
+import boiler.HttpRequest;
+import boiler.HttpResponse;
+
+/*
+I can have my own instance of vibes sessionpool.
+Set and get session cookie myself.
+Keep testing through vibes request/response but have methods for my layer.
+*/
 
 class HTTPHandlerTester {
-	HTTPServerRequest request;
-	HTTPServerResponse response;
+	HTTPServerRequest viberequest;
+	HTTPServerResponse viberesponse;
 	MemoryStream response_stream;
 	ubyte[1000000] outputdata;
 	SessionStore sessionstore;
@@ -34,9 +43,9 @@ class HTTPHandlerTester {
 	public void Request(Request_delegate handler) {
 		InetHeaderMap headers;
 		if(sessionID != null) {
-			headers["Cookie"] = "vibe.session_id=" ~ sessionID;
+			headers["Cookie"] = "session_id=" ~ sessionID;
 		}
-		request = createTestHTTPServerRequest(URL("http://localhost/test"), HTTPMethod.POST, headers);
+		viberequest = createTestHTTPServerRequest(URL("http://localhost/test"), HTTPMethod.POST, headers);
 		CallHandler(handler);
 	}
 
@@ -50,19 +59,19 @@ class HTTPHandlerTester {
 		headers["Content-Type"] = "application/json";
 
 		if(sessionID != null) {
-			headers["Cookie"] = "vibe.session_id=" ~ sessionID;
+			headers["Cookie"] = "session_id=" ~ sessionID;
 		}
 
 		auto inputStream = createInputStreamFromString(input);
-		request = createTestHTTPServerRequest(URL("http://localhost/test"), HTTPMethod.POST, headers, inputStream);
+		viberequest = createTestHTTPServerRequest(URL("http://localhost/test"), HTTPMethod.POST, headers, inputStream);
 		PopulateRequestJson();
 	}
 
 	private void PopulateRequestJson() {
 		// NOTICE: Code lifted from vibe.d source handleRequest
-		if (icmp2(request.contentType, "application/json") == 0 || icmp2(request.contentType, "application/vnd.api+json") == 0 ) {
-			auto bodyStr = () @trusted { return cast(string)request.bodyReader.readAll(); } ();
-			if (!bodyStr.empty) request.json = parseJson(bodyStr);
+		if (icmp2(viberequest.contentType, "application/json") == 0 || icmp2(viberequest.contentType, "application/vnd.api+json") == 0 ) {
+			auto bodyStr = () @trusted { return cast(string)viberequest.bodyReader.readAll(); } ();
+			if (!bodyStr.empty) viberequest.json = parseJson(bodyStr);
 		}
 	}
 
@@ -71,9 +80,16 @@ class HTTPHandlerTester {
 			outputdata[i] = 0;
 		}
 		response_stream = new MemoryStream(outputdata);
-		response = createTestHTTPServerResponse(response_stream, sessionstore);
+		viberesponse = createTestHTTPServerResponse(response_stream, sessionstore);
 		SetSessionFromCookie();
-		handler(request, response);
+		
+		HttpRequest request = CreateHttpRequestFromVibeHttpRequest(viberequest, sessionstore);
+		/*
+		HttpRequest request = new HttpRequest(sessionstore);
+		request.SetJsonFromString(serializeToJsonString(viberequest.json));
+		request.session = viberequest.session;
+		*/
+		handler(request, viberesponse);
 		sessionID = GetResponseSessionID();
 	}
 
@@ -81,12 +97,12 @@ class HTTPHandlerTester {
 		// NOTICE: Code lifted from vibe.d source handleRequest
 		// use the first cookie that contains a valid session ID in case
 		// of multiple matching session cookies
-		auto pv = "cookie" in request.headers;
-		if (pv) parseCookies(*pv, request.cookies);
-		foreach (val; request.cookies.getAll("vibe.session_id")) {
-			request.session = sessionstore.open(val);
-			//response.m_session = request.session;
-			if (request.session) break;
+		auto pv = "cookie" in viberequest.headers;
+		if (pv) parseCookies(*pv, viberequest.cookies);
+		foreach (val; viberequest.cookies.getAll("session_id")) {
+			viberequest.session = sessionstore.open(val);
+			//viberesponse.m_session = viberequest.session;
+			if (viberequest.session) break;
 		}
 	}
 	
@@ -149,7 +165,7 @@ class CallFlagDummyHandler {
 		called = false;
 	}
 
-	void handleRequest(HTTPServerRequest request, HTTPServerResponse response) {
+	void handleRequest(HttpRequest request, HTTPServerResponse response) {
 		called = true;
 	}
 }
@@ -161,15 +177,15 @@ class JsonInputDummyHandler {
 		receivedJson = false;
 	}
 
-	void handleRequest(HTTPServerRequest request, HTTPServerResponse response) {
-		if(request.json["data"].to!int == 4) {
+	void handleRequest(HttpRequest request, HTTPServerResponse response) {
+		if(request.json["data"].integer == 4) {
 			receivedJson = true;
 		}
 	}
 }
 
 class SessionDummyHandler {
-	void handleRequest(HTTPServerRequest request, HTTPServerResponse response) {
+	void handleRequest(HttpRequest request, HTTPServerResponse response) {
 		auto session = response.startSession();
 		session.set("testkey", "testvalue");
 		response.writeBody("body", 200);
@@ -183,7 +199,7 @@ class RequestSessionDummyHandler {
 		sessionok = false;
 	}
 
-	void handleRequest(HTTPServerRequest request, HTTPServerResponse response) {
+	void handleRequest(HttpRequest request, HTTPServerResponse response) {
 		if(request.session) {
 			auto id = request.session.get!string("testkey");
 			if(id == "testvalue") {
