@@ -39,9 +39,14 @@ class HttpRequest {
 
 HttpRequest CreateHttpRequestFromVibeHttpRequest(HTTPServerRequest viberequest, SessionStore sessionstore) {
 	HttpRequest request = new HttpRequest(sessionstore);
+
 	if(viberequest.json.type != Json.Type.undefined)
 		request.SetJsonFromString(serializeToJsonString(viberequest.json));
-	request.session = viberequest.session;
+
+	foreach (val; viberequest.cookies.getAll("session_id")) {
+		request.session = sessionstore.open(val);
+		if (request.session) break;
+	}
 	return request;
 }
 

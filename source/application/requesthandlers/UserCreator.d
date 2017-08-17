@@ -12,6 +12,7 @@ import application.storage.user;
 import application.database;
 import boiler.helpers;
 import boiler.HttpRequest;
+import boiler.HttpResponse;
 
 class UserCreator: RequestHandler {
 	User_storage user_storage;
@@ -20,7 +21,7 @@ class UserCreator: RequestHandler {
 		this.user_storage = user_storage;
 	}	
 
-	void HandleRequest(HttpRequest req, HTTPServerResponse res) {
+	void HandleRequest(HttpRequest req, HttpResponse res) {
 		//Total remake.
 		//Each request handler should be an object by itself.
 		//There should be a factory to provide a handler for each request.

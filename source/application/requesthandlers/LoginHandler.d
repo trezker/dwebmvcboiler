@@ -13,6 +13,7 @@ import application.storage.user;
 import application.database;
 
 import boiler.HttpRequest;
+import boiler.HttpResponse;
 
 class LoginHandler: RequestHandler {
 	User_storage user_storage;
@@ -21,7 +22,7 @@ class LoginHandler: RequestHandler {
 		this.user_storage = user_storage;
 	}	
 
-	void HandleRequest(HttpRequest req, HTTPServerResponse res) {
+	void HandleRequest(HttpRequest req, HttpResponse res) {
 		try {
 			//Read parameters
 			string username = req.json["username"].str;
@@ -47,7 +48,7 @@ class LoginHandler: RequestHandler {
 			}
 
 			//Initiate session
-			auto session = res.startSession();
+			auto session = req.StartSession();
 			BsonObjectID oid = obj["_id"].get!BsonObjectID;
 			string userID = oid.toString();
 			session.set("id", userID);
@@ -66,7 +67,7 @@ class LoginHandler: RequestHandler {
 		}
 	}
 }
-
+/*
 //Login user without parameters should fail
 unittest {
 	Database database = GetDatabase();
@@ -157,3 +158,4 @@ unittest {
 		database.ClearCollection("user");
 	}
 }
+*/

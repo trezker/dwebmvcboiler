@@ -18,6 +18,7 @@ import vibe.http.fileserver;
 
 import application.application;
 import boiler.HttpRequest;
+import boiler.HttpResponse;
 
 class Server {
 private:
@@ -54,7 +55,13 @@ public:
 			string method = splitpath[3];
 			if(model in models && method in models[model]) {
 				HttpRequest request = CreateHttpRequestFromVibeHttpRequest(req, sessionstore);
-				models[model][method].call (request, res);
+				HttpResponse response = new HttpResponse();
+				models[model][method].call (request, response);
+				if(request.session) {
+					res.setCookie("session_id", request.session.id);
+				}
+
+				res.writeBody(response.content, response.code);
 			}
 		}
 		catch(Exception e) {
@@ -68,7 +75,13 @@ public:
 			string method = req.json["method"].to!string;
 			if(model in models && method in models[model]) {
 				HttpRequest request = CreateHttpRequestFromVibeHttpRequest(req, sessionstore);
-				models[model][method].call (request, res);
+				HttpResponse response = new HttpResponse();
+				models[model][method].call (request, response);
+				if(request.session) {
+					res.setCookie("session_id", request.session.id);
+				}
+
+				res.writeBody(response.content, response.code);
 			}
 			else {
 				res.writeJsonBody("Model/method does not exist");

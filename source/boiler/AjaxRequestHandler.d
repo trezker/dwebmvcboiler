@@ -6,9 +6,10 @@ import vibe.http.server;
 import boiler.HttpHandlerTester;
 import boiler.model;
 import boiler.HttpRequest;
+import boiler.HttpResponse;
 
 interface RequestHandler {
-	public void HandleRequest(HttpRequest req, HTTPServerResponse res);
+	public void HandleRequest(HttpRequest req, HttpResponse res);
 }
 
 class AjaxRequestHandler {
@@ -18,7 +19,7 @@ class AjaxRequestHandler {
 		handlers[name] = handler;
 	}
 
-	public void HandleRequest(HttpRequest req, HTTPServerResponse res) {
+	public void HandleRequest(HttpRequest req, HttpResponse res) {
 		try {
 			string method = req.json["method"].str;
 			if(method in handlers) {
@@ -39,7 +40,7 @@ class AjaxRequestHandler {
 }
 
 class SuccessTestHandler : RequestHandler {
-	public void HandleRequest(HttpRequest req, HTTPServerResponse res) {
+	public void HandleRequest(HttpRequest req, HttpResponse res) {
 		JSONValue json;
 		json["success"] = true;
 		res.writeBody(json.toString, 200);
