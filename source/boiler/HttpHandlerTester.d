@@ -16,12 +16,6 @@ import boiler.helpers;
 import boiler.HttpRequest;
 import boiler.HttpResponse;
 
-/*
-I can have my own instance of vibes sessionpool.
-Set and get session cookie myself.
-Keep testing through vibes request/response but have methods for my layer.
-*/
-
 class HTTPHandlerTester {
 	HTTPServerRequest viberequest;
 	HTTPServerResponse viberesponse;
@@ -94,7 +88,6 @@ class HTTPHandlerTester {
 		viberesponse = createTestHTTPServerResponse(response_stream, vibesessionstore);
 
 		if(request.session) {
-			writeln("has session");
 			viberesponse.setCookie("session_id", request.session.id);
 		}
 
@@ -238,25 +231,21 @@ unittest {
 	auto dummy = new SessionDummyHandler();
 	
 	auto tester = new HTTPHandlerTester(&dummy.handleRequest);
-	writeln(tester.GetResponseLines());
 	assertNotEqual(tester.GetResponseSessionID(), null);
-	//string value = tester.GetResponseSessionValue!string("testkey");
-	//assertEqual(value, "testvalue");
+	string value = tester.GetResponseSessionValue!string("testkey");
+	assertEqual(value, "testvalue");
 }
 
 //Subsequent calls after session value is set should have that session in request
-/*
 unittest {
 	auto responsesessinohandler = new SessionDummyHandler();
 	auto tester = new HTTPHandlerTester(&responsesessinohandler.handleRequest);
 
 	auto requestsessionhandler = new RequestSessionDummyHandler();
 	tester.Request(&requestsessionhandler.handleRequest);
-		writeln(tester.GetResponseLines());
 
 	requestsessionhandler = new RequestSessionDummyHandler();
 	tester.Request(&requestsessionhandler.handleRequest);
 
 	assert(requestsessionhandler.sessionok);
 }
-*/
