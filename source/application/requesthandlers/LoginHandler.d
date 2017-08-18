@@ -67,7 +67,7 @@ class LoginHandler: RequestHandler {
 		}
 	}
 }
-/*
+
 //Login user without parameters should fail
 unittest {
 	Database database = GetDatabase();
@@ -158,4 +158,3 @@ unittest {
 		database.ClearCollection("user");
 	}
 }
-*/
