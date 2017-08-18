@@ -8,6 +8,7 @@ import vibe.http.server;
 import vibe.data.json;
 
 import boiler.helpers;
+import boiler.HttpResponse;
 
 class HttpRequest {
 	private SessionStore sessionstore;
@@ -48,6 +49,13 @@ HttpRequest CreateHttpRequestFromVibeHttpRequest(HTTPServerRequest viberequest, 
 		if (request.session) break;
 	}
 	return request;
+}
+
+void RenderVibeHttpResponseFromRequestAndResponse(HTTPServerResponse viberesponse, HttpRequest request, HttpResponse response) {
+	if(request.session) {
+		viberesponse.setCookie("session_id", request.session.id);
+	}
+	viberesponse.writeBody(response.content, response.code);
 }
 
 //Create request with json

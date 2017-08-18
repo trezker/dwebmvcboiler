@@ -87,11 +87,8 @@ class HTTPHandlerTester {
 		response_stream = new MemoryStream(outputdata);
 		viberesponse = createTestHTTPServerResponse(response_stream, vibesessionstore);
 
-		if(request.session) {
-			viberesponse.setCookie("session_id", request.session.id);
-		}
+		RenderVibeHttpResponseFromRequestAndResponse(viberesponse, request, response);
 
-		viberesponse.writeBody(response.content, response.code);
 		sessionID = GetResponseSessionID();
 	}
 

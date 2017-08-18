@@ -57,11 +57,7 @@ public:
 				HttpRequest request = CreateHttpRequestFromVibeHttpRequest(req, sessionstore);
 				HttpResponse response = new HttpResponse();
 				models[model][method].call (request, response);
-				if(request.session) {
-					res.setCookie("session_id", request.session.id);
-				}
-
-				res.writeBody(response.content, response.code);
+				RenderVibeHttpResponseFromRequestAndResponse(res, request, response);
 			}
 		}
 		catch(Exception e) {
@@ -77,11 +73,7 @@ public:
 				HttpRequest request = CreateHttpRequestFromVibeHttpRequest(req, sessionstore);
 				HttpResponse response = new HttpResponse();
 				models[model][method].call (request, response);
-				if(request.session) {
-					res.setCookie("session_id", request.session.id);
-				}
-
-				res.writeBody(response.content, response.code);
+				RenderVibeHttpResponseFromRequestAndResponse(res, request, response);
 			}
 			else {
 				res.writeJsonBody("Model/method does not exist");
