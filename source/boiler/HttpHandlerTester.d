@@ -81,15 +81,18 @@ class HTTPHandlerTester {
 
 		handler(request, response);
 
+		PrepareVibeResponse();
+		RenderVibeHttpResponseFromRequestAndResponse(viberesponse, request, response);
+
+		sessionID = GetResponseSessionID();
+	}
+
+	private void PrepareVibeResponse() {
 		for(int i = 0; outputdata[i] != 0; ++i) {
 			outputdata[i] = 0;
 		}
 		response_stream = new MemoryStream(outputdata);
 		viberesponse = createTestHTTPServerResponse(response_stream, vibesessionstore);
-
-		RenderVibeHttpResponseFromRequestAndResponse(viberesponse, request, response);
-
-		sessionID = GetResponseSessionID();
 	}
 
 	private void SetRequestCookies() {
