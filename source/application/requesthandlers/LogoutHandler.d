@@ -31,7 +31,7 @@ class LogoutHandler: RequestHandler {
 unittest {
 	import application.testhelpers;
 	import application.database;
-	import application.LoginHandler;
+	import application.Login;
 	import application.storage.user;
 
 	Database database = GetDatabase();
@@ -39,7 +39,7 @@ unittest {
 	try {
 		CreateTestUser("testname", "testpass");
 
-		LoginHandler loginHandler = new LoginHandler;
+		Login loginHandler = new Login;
 		loginHandler.setup(new User_storage(database));
 		JSONValue jsoninput;
 		jsoninput["username"] = "testname";

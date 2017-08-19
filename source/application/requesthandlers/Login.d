@@ -1,4 +1,4 @@
-module application.LoginHandler;
+module application.Login;
 
 import std.json;
 import std.stdio;
@@ -15,7 +15,7 @@ import application.database;
 import boiler.HttpRequest;
 import boiler.HttpResponse;
 
-class LoginHandler: RequestHandler {
+class Login: RequestHandler {
 	User_storage user_storage;
 
 	void setup(User_storage user_storage) {
@@ -73,7 +73,7 @@ unittest {
 	Database database = GetDatabase();
 	
 	try {
-		LoginHandler m = new LoginHandler;
+		Login m = new Login;
 		m.setup(new User_storage(database));
 
 		HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest);
@@ -91,7 +91,7 @@ unittest {
 	Database database = GetDatabase();
 	
 	try {
-		LoginHandler m = new LoginHandler;
+		Login m = new Login;
 		m.setup(new User_storage(database));
 		JSONValue jsoninput;
 		jsoninput["username"] = "testname";
@@ -116,7 +116,7 @@ unittest {
 	try {
 		CreateTestUser("testname", "testpass");
 
-		LoginHandler m = new LoginHandler;
+		Login m = new Login;
 		m.setup(new User_storage(database));
 		JSONValue jsoninput;
 		jsoninput["username"] = "testname";
@@ -143,7 +143,7 @@ unittest {
 	try {
 		CreateTestUser("testname", "testpass");
 
-		LoginHandler m = new LoginHandler;
+		Login m = new Login;
 		m.setup(new User_storage(database));
 		JSONValue jsoninput;
 		jsoninput["username"] = "testname";
