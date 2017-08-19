@@ -1,4 +1,4 @@
-module application.LogoutHandler;
+module application.Logout;
 
 import std.json;
 import std.stdio;
@@ -10,7 +10,7 @@ import boiler.helpers;
 import boiler.HttpRequest;
 import boiler.HttpResponse;
 
-class LogoutHandler: RequestHandler {
+class Logout: RequestHandler {
 	void HandleRequest(HttpRequest req, HttpResponse res) {
 		try {
 			req.TerminateSession();
@@ -47,7 +47,7 @@ unittest {
 
 		HTTPHandlerTester tester = new HTTPHandlerTester(&loginHandler.HandleRequest, jsoninput.toString);
 
-		LogoutHandler logoutHandler = new LogoutHandler();
+		Logout logoutHandler = new Logout();
 		tester.Request(&logoutHandler.HandleRequest);
 		
 		JSONValue json = tester.GetResponseJson();
