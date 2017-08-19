@@ -1,0 +1,61 @@
+module application.LogoutHandler;
+
+import std.json;
+import std.stdio;
+import vibe.http.server;
+
+import boiler.HttpHandlerTester;
+import boiler.Ajax;
+import boiler.helpers;
+import boiler.HttpRequest;
+import boiler.HttpResponse;
+
+class LogoutHandler: RequestHandler {
+	void HandleRequest(HttpRequest req, HttpResponse res) {
+		try {
+			req.TerminateSession();
+
+			JSONValue json;
+			json["success"] = true;
+			res.writeBody(json.toString, 200);
+		}
+		catch(Exception e) {
+			JSONValue json;
+			json["success"] = false;
+			res.writeBody(json.toString, 200);
+		}
+	}
+}
+
+//Logout should succeed and session should not contain a user id
+unittest {
+	import application.testhelpers;
+	import application.database;
+	import application.LoginHandler;
+	import application.storage.user;
+
+	Database database = GetDatabase();
+	
+	try {
+		CreateTestUser("testname", "testpass");
+
+		LoginHandler loginHandler = new LoginHandler;
+		loginHandler.setup(new User_storage(database));
+		JSONValue jsoninput;
+		jsoninput["username"] = "testname";
+		jsoninput["password"] = "testpass";
+
+		HTTPHandlerTester tester = new HTTPHandlerTester(&loginHandler.HandleRequest, jsoninput.toString);
+
+		LogoutHandler logoutHandler = new LogoutHandler();
+		tester.Request(&logoutHandler.HandleRequest);
+		
+		JSONValue json = tester.GetResponseJson();
+		assert(json["success"] == JSONValue(true));
+		string id = tester.GetResponseSessionValue!string("id");
+		assertEqual(id, "");
+	}
+	finally {
+		database.ClearCollection("user");
+	}
+}

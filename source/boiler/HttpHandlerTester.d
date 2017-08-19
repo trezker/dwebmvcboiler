@@ -78,7 +78,6 @@ class HTTPHandlerTester {
 		
 		request = CreateHttpRequestFromVibeHttpRequest(viberequest, sessionstore);
 		HttpResponse response = new HttpResponse();
-
 		handler(request, response);
 
 		PrepareVibeResponse();
