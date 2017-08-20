@@ -24,11 +24,11 @@ class Server {
 private:
 	Model_method[string][string] models;
 	Application application;
-	AjaxRequestHandler ajaxRequestHandler;
+	Ajax ajax;
 	SessionStore sessionstore;
 public:
 	bool setup() {
-		ajaxRequestHandler = new AjaxRequestHandler();
+		ajax = new Ajax();
 		application = new Application();
 		if(!application.initialize()) {
 			logInfo("Application initialization failed.");
@@ -36,7 +36,7 @@ public:
 		}
 
 		application.setup_models(models);
-		application.SetupAjaxMethods(ajaxRequestHandler);
+		application.SetupAjaxMethods(ajax);
 		sessionstore = new MemorySessionStore ();
 		return true;
 	}
@@ -65,7 +65,7 @@ public:
 		}
 	}
 
-	void ajax(HTTPServerRequest req, HTTPServerResponse res) {
+	void PerformAjax(HTTPServerRequest req, HTTPServerResponse res) {
 		try {
 			string model = req.json["model"].to!string;
 			string method = req.json["method"].to!string;

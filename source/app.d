@@ -28,7 +28,7 @@ shared static this() {
 	settings.sessionStore = new MemorySessionStore;
 
 	auto router = new URLRouter;
-	router.post("/ajax*", &server.ajax);
+	router.post("/ajax*", &server.PerformAjax);
 	router.get("/ws", handleWebSockets(&server.websocket));
 	router.get("/source/*", serveStaticFiles("./public/"));
 	router.get("/get/*", &server.get);

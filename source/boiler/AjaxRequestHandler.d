@@ -8,7 +8,7 @@ import boiler.model;
 import boiler.HttpRequest;
 import boiler.HttpResponse;
 
-class AjaxRequestHandler: Action {
+class Ajax: Action {
 	private Action[string] handlers;
 
 	public void SetHandler(string name, Action handler) {
@@ -46,9 +46,9 @@ class SuccessTestHandler : Action {
 
 //Call without parameters should fail.
 unittest {
-	AjaxRequestHandler handler = new AjaxRequestHandler();
+	Ajax ajax = new Ajax();
 
-	HTTPHandlerTester tester = new HTTPHandlerTester(&handler.Perform);
+	HTTPHandlerTester tester = new HTTPHandlerTester(&ajax.Perform);
 
 	JSONValue json = tester.GetResponseJson();
 	assert(json["success"] == JSONValue(false));
@@ -56,9 +56,9 @@ unittest {
 
 //Call to method that doesn't exist should fail.
 unittest {
-	AjaxRequestHandler handler = new AjaxRequestHandler();
+	Ajax ajax = new Ajax();
 
-	HTTPHandlerTester tester = new HTTPHandlerTester(&handler.Perform, "{\"method\": \"none\"}");
+	HTTPHandlerTester tester = new HTTPHandlerTester(&ajax.Perform, "{\"method\": \"none\"}");
 
 	JSONValue json = tester.GetResponseJson();
 	assert(json["success"] == JSONValue(false));
@@ -66,10 +66,10 @@ unittest {
 
 //Call to method that exists should succeed.
 unittest {
-	AjaxRequestHandler handler = new AjaxRequestHandler();
-	handler.SetHandler("test", new SuccessTestHandler);
+	Ajax ajax = new Ajax();
+	ajax.SetHandler("test", new SuccessTestHandler);
 
-	HTTPHandlerTester tester = new HTTPHandlerTester(&handler.Perform, "{\"method\": \"test\"}");
+	HTTPHandlerTester tester = new HTTPHandlerTester(&ajax.Perform, "{\"method\": \"test\"}");
 
 	JSONValue json = tester.GetResponseJson();
 	assert(json["success"] == JSONValue(true));

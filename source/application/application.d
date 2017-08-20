@@ -31,8 +31,8 @@ class Application {
 		//user_model.setup(mongo, models);
 	}
 
-	void SetupAjaxMethods(AjaxRequestHandler ajaxRequestHandler) {
-		ajaxRequestHandler.SetHandler("create_user", new UserCreator());
+	void SetupAjaxMethods(Ajax ajax) {
+		ajax.SetHandler("create_user", new UserCreator());
 	}
 
 	string rewrite_path(HTTPServerRequest req) {
