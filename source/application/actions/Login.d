@@ -7,7 +7,6 @@ import vibe.http.server;
 import vibe.db.mongo.mongo;
 
 import boiler.HttpHandlerTester;
-import boiler.Ajax;
 import boiler.helpers;
 import application.storage.user;
 import application.database;
@@ -15,14 +14,14 @@ import application.database;
 import boiler.HttpRequest;
 import boiler.HttpResponse;
 
-class Login: RequestHandler {
+class Login: Action {
 	User_storage user_storage;
 
 	void setup(User_storage user_storage) {
 		this.user_storage = user_storage;
 	}	
 
-	void HandleRequest(HttpRequest req, HttpResponse res) {
+	void Perform(HttpRequest req, HttpResponse res) {
 		try {
 			//Read parameters
 			string username = req.json["username"].str;
@@ -76,7 +75,7 @@ unittest {
 		Login m = new Login;
 		m.setup(new User_storage(database));
 
-		HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest);
+		HTTPHandlerTester tester = new HTTPHandlerTester(&m.Perform);
 
 		JSONValue json = tester.GetResponseJson();
 		assert(json["success"] == JSONValue(false));
@@ -97,7 +96,7 @@ unittest {
 		jsoninput["username"] = "testname";
 		jsoninput["password"] = "testpass";
 
-		HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
+		HTTPHandlerTester tester = new HTTPHandlerTester(&m.Perform, jsoninput.toString);
 
 		JSONValue json = tester.GetResponseJson();
 		assert(json["success"] == JSONValue(false));
@@ -122,7 +121,7 @@ unittest {
 		jsoninput["username"] = "testname";
 		jsoninput["password"] = "testpass";
 
-		HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
+		HTTPHandlerTester tester = new HTTPHandlerTester(&m.Perform, jsoninput.toString);
 
 		JSONValue json = tester.GetResponseJson();
 		assert(json["success"] == JSONValue(true));
@@ -149,7 +148,7 @@ unittest {
 		jsoninput["username"] = "testname";
 		jsoninput["password"] = "wrong";
 
-		HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
+		HTTPHandlerTester tester = new HTTPHandlerTester(&m.Perform, jsoninput.toString);
 
 		JSONValue json = tester.GetResponseJson();
 		assert(json["success"] == JSONValue(false));

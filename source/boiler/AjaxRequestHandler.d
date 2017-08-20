@@ -8,22 +8,18 @@ import boiler.model;
 import boiler.HttpRequest;
 import boiler.HttpResponse;
 
-interface RequestHandler {
-	public void HandleRequest(HttpRequest req, HttpResponse res);
-}
+class AjaxRequestHandler: Action {
+	private Action[string] handlers;
 
-class AjaxRequestHandler {
-	private RequestHandler[string] handlers;
-
-	public void SetHandler(string name, RequestHandler handler) {
+	public void SetHandler(string name, Action handler) {
 		handlers[name] = handler;
 	}
 
-	public void HandleRequest(HttpRequest req, HttpResponse res) {
+	public void Perform(HttpRequest req, HttpResponse res) {
 		try {
 			string method = req.json["method"].str;
 			if(method in handlers) {
-				handlers[method].HandleRequest (req, res);
+				handlers[method].Perform (req, res);
 			}
 			else {
 				JSONValue json;
@@ -39,8 +35,8 @@ class AjaxRequestHandler {
 	}
 }
 
-class SuccessTestHandler : RequestHandler {
-	public void HandleRequest(HttpRequest req, HttpResponse res) {
+class SuccessTestHandler : Action {
+	public void Perform(HttpRequest req, HttpResponse res) {
 		JSONValue json;
 		json["success"] = true;
 		res.writeBody(json.toString, 200);
@@ -52,7 +48,7 @@ class SuccessTestHandler : RequestHandler {
 unittest {
 	AjaxRequestHandler handler = new AjaxRequestHandler();
 
-	HTTPHandlerTester tester = new HTTPHandlerTester(&handler.HandleRequest);
+	HTTPHandlerTester tester = new HTTPHandlerTester(&handler.Perform);
 
 	JSONValue json = tester.GetResponseJson();
 	assert(json["success"] == JSONValue(false));
@@ -62,7 +58,7 @@ unittest {
 unittest {
 	AjaxRequestHandler handler = new AjaxRequestHandler();
 
-	HTTPHandlerTester tester = new HTTPHandlerTester(&handler.HandleRequest, "{\"method\": \"none\"}");
+	HTTPHandlerTester tester = new HTTPHandlerTester(&handler.Perform, "{\"method\": \"none\"}");
 
 	JSONValue json = tester.GetResponseJson();
 	assert(json["success"] == JSONValue(false));
@@ -73,7 +69,7 @@ unittest {
 	AjaxRequestHandler handler = new AjaxRequestHandler();
 	handler.SetHandler("test", new SuccessTestHandler);
 
-	HTTPHandlerTester tester = new HTTPHandlerTester(&handler.HandleRequest, "{\"method\": \"test\"}");
+	HTTPHandlerTester tester = new HTTPHandlerTester(&handler.Perform, "{\"method\": \"test\"}");
 
 	JSONValue json = tester.GetResponseJson();
 	assert(json["success"] == JSONValue(true));

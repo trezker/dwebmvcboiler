@@ -5,13 +5,12 @@ import std.stdio;
 import vibe.http.server;
 
 import boiler.HttpHandlerTester;
-import boiler.Ajax;
 import boiler.helpers;
 import boiler.HttpRequest;
 import boiler.HttpResponse;
 
-class Logout: RequestHandler {
-	void HandleRequest(HttpRequest req, HttpResponse res) {
+class Logout: Action {
+	void Perform(HttpRequest req, HttpResponse res) {
 		try {
 			req.TerminateSession();
 
@@ -45,10 +44,10 @@ unittest {
 		jsoninput["username"] = "testname";
 		jsoninput["password"] = "testpass";
 
-		HTTPHandlerTester tester = new HTTPHandlerTester(&loginHandler.HandleRequest, jsoninput.toString);
+		HTTPHandlerTester tester = new HTTPHandlerTester(&loginHandler.Perform, jsoninput.toString);
 
 		Logout logoutHandler = new Logout();
-		tester.Request(&logoutHandler.HandleRequest);
+		tester.Request(&logoutHandler.Perform);
 		
 		JSONValue json = tester.GetResponseJson();
 		assert(json["success"] == JSONValue(true));

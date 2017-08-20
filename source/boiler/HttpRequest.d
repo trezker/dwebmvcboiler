@@ -10,6 +10,10 @@ import vibe.data.json;
 import boiler.helpers;
 import boiler.HttpResponse;
 
+interface Action {
+	public void Perform(HttpRequest req, HttpResponse res);
+}
+
 class HttpRequest {
 	private SessionStore sessionstore;
 	Session session;

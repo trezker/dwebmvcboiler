@@ -15,7 +15,7 @@ void CreateTestUser(string name, string password) {
 	jsoninput["username"] = name;
 	jsoninput["password"] = password;
 
-	HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
+	HTTPHandlerTester tester = new HTTPHandlerTester(&m.Perform, jsoninput.toString);
 
 	database.Sync();
 }

@@ -7,21 +7,20 @@ import vibe.http.server;
 import vibe.db.mongo.mongo;
 
 import boiler.HttpHandlerTester;
-import boiler.Ajax;
 import application.storage.user;
 import application.database;
 import boiler.helpers;
 import boiler.HttpRequest;
 import boiler.HttpResponse;
 
-class UserCreator: RequestHandler {
+class UserCreator: Action {
 	User_storage user_storage;
 
 	void setup(User_storage user_storage) {
 		this.user_storage = user_storage;
 	}	
 
-	void HandleRequest(HttpRequest req, HttpResponse res) {
+	void Perform(HttpRequest req, HttpResponse res) {
 		//Total remake.
 		//Each request handler should be an object by itself.
 		//There should be a factory to provide a handler for each request.
@@ -71,7 +70,7 @@ unittest {
 		UserCreator m = new UserCreator;
 		m.setup(new User_storage(database));
 
-		HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest);
+		HTTPHandlerTester tester = new HTTPHandlerTester(&m.Perform);
 
 		JSONValue json = tester.GetResponseJson();
 		assert(json["success"] == JSONValue(false));
@@ -92,7 +91,7 @@ unittest {
 		jsoninput["username"] = "testname";
 		jsoninput["password"] = "testpass";
 
-		HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
+		HTTPHandlerTester tester = new HTTPHandlerTester(&m.Perform, jsoninput.toString);
 
 		JSONValue jsonoutput = tester.GetResponseJson();
 		assert(jsonoutput["success"] == JSONValue(true));
@@ -117,7 +116,7 @@ unittest {
 		jsoninput["username"] = username;
 		jsoninput["password"] = password;
 
-		HTTPHandlerTester tester = new HTTPHandlerTester(&m.HandleRequest, jsoninput.toString);
+		HTTPHandlerTester tester = new HTTPHandlerTester(&m.Perform, jsoninput.toString);
 		
 		auto obj = user_storage.get_user_by_name(username);
 		assert(isSameHash(toPassword(password.dup), parseHash(obj["password"].get!string)));
