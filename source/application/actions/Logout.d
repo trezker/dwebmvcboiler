@@ -10,7 +10,8 @@ import boiler.HttpRequest;
 import boiler.HttpResponse;
 
 class Logout: Action {
-	void Perform(HttpRequest req, HttpResponse res) {
+	HttpResponse Perform(HttpRequest req) {
+		HttpResponse res = new HttpResponse;
 		try {
 			req.TerminateSession();
 
@@ -23,6 +24,7 @@ class Logout: Action {
 			json["success"] = false;
 			res.writeBody(json.toString, 200);
 		}
+		return res;
 	}
 }
 

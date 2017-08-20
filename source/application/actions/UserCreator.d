@@ -20,7 +20,7 @@ class UserCreator: Action {
 		this.user_storage = user_storage;
 	}	
 
-	void Perform(HttpRequest req, HttpResponse res) {
+	HttpResponse Perform(HttpRequest req) {
 		//Total remake.
 		//Each request handler should be an object by itself.
 		//There should be a factory to provide a handler for each request.
@@ -28,7 +28,7 @@ class UserCreator: Action {
 
 		//I think I'm best off assuming all parameters are in place, which they should be if this is called from client code.
 		//Exceptions should only happen during development or if someone is trying to hack the API.
-
+		HttpResponse res = new HttpResponse;
 		try {
 			//Read parameters
 			string username = req.json["username"].str;
@@ -41,7 +41,7 @@ class UserCreator: Action {
 				json["success"] = false;
 				json["info"] = "Username is taken";
 				res.writeBody(json.toString, 200);
-				return;
+				return res;
 			}
 
 			string hashedPassword = makeHash(toPassword(password.dup)).toString();
@@ -57,8 +57,8 @@ class UserCreator: Action {
 			JSONValue json;
 			json["success"] = false;
 			res.writeBody(json.toString, 200);
-
 		}
+		return res;
 	}
 }
 

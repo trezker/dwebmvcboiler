@@ -61,8 +61,7 @@ public:
 			string method = splitpath[3];
 			if(model in models && method in models[model]) {
 				HttpRequest request = CreateHttpRequestFromVibeHttpRequest(req, sessionstore);
-				HttpResponse response = new HttpResponse();
-				models[model][method].call (request, response);
+				HttpResponse response = models[model][method].call (request);
 				RenderVibeHttpResponseFromRequestAndResponse(res, request, response);
 			}
 		}
@@ -77,8 +76,7 @@ public:
 			string method = req.json["method"].to!string;
 			if(model in models && method in models[model]) {
 				HttpRequest request = CreateHttpRequestFromVibeHttpRequest(req, sessionstore);
-				HttpResponse response = new HttpResponse();
-				models[model][method].call (request, response);
+				HttpResponse response = models[model][method].call (request);
 				RenderVibeHttpResponseFromRequestAndResponse(res, request, response);
 			}
 			else {

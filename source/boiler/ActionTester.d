@@ -77,8 +77,7 @@ class ActionTester {
 		SetRequestCookies();
 		
 		request = CreateHttpRequestFromVibeHttpRequest(viberequest, sessionstore);
-		HttpResponse response = new HttpResponse();
-		handler(request, response);
+		HttpResponse response = handler(request);
 
 		PrepareVibeResponse();
 		RenderVibeHttpResponseFromRequestAndResponse(viberesponse, request, response);
@@ -162,8 +161,10 @@ class CallFlagDummyHandler {
 		called = false;
 	}
 
-	void handleRequest(HttpRequest request, HttpResponse response) {
+	HttpResponse handleRequest(HttpRequest request) {
+		HttpResponse response = new HttpResponse;
 		called = true;
+		return response;
 	}
 }
 
@@ -174,18 +175,22 @@ class JsonInputDummyHandler {
 		receivedJson = false;
 	}
 
-	void handleRequest(HttpRequest request, HttpResponse response) {
+	HttpResponse handleRequest(HttpRequest request) {
+		HttpResponse response = new HttpResponse;
 		if(request.json["data"].integer == 4) {
 			receivedJson = true;
 		}
+		return response;
 	}
 }
 
 class SessionDummyHandler {
-	void handleRequest(HttpRequest request, HttpResponse response) {
+	HttpResponse handleRequest(HttpRequest request) {
+		HttpResponse response = new HttpResponse;
 		auto session = request.StartSession();
 		session.set("testkey", "testvalue");
 		response.writeBody("body", 200);
+		return response;
 	}
 }
 
@@ -196,7 +201,8 @@ class RequestSessionDummyHandler {
 		sessionok = false;
 	}
 
-	void handleRequest(HttpRequest request, HttpResponse response) {
+	HttpResponse handleRequest(HttpRequest request) {
+		HttpResponse response = new HttpResponse;
 		if(request.session) {
 			auto id = request.session.get!string("testkey");
 			if(id == "testvalue") {
@@ -204,6 +210,7 @@ class RequestSessionDummyHandler {
 			}
 		}
 		response.writeBody("body", 200);
+		return response;
 	}
 }
 

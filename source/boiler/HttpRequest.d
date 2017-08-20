@@ -11,7 +11,7 @@ import boiler.helpers;
 import boiler.HttpResponse;
 
 interface Action {
-	public void Perform(HttpRequest req, HttpResponse res);
+	public HttpResponse Perform(HttpRequest req);
 }
 
 class HttpRequest {

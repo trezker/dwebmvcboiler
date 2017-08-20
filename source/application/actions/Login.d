@@ -21,7 +21,8 @@ class Login: Action {
 		this.user_storage = user_storage;
 	}	
 
-	void Perform(HttpRequest req, HttpResponse res) {
+	HttpResponse Perform(HttpRequest req) {
+		HttpResponse res = new HttpResponse;
 		try {
 			//Read parameters
 			string username = req.json["username"].str;
@@ -34,7 +35,7 @@ class Login: Action {
 				json["success"] = false;
 				json["info"] = "Invalid login";
 				res.writeBody(json.toString, 200);
-				return;
+				return res;
 			}
 
 			//Verify password
@@ -43,7 +44,7 @@ class Login: Action {
 				json["success"] = false;
 				json["info"] = "Invalid login password";
 				res.writeBody(json.toString, 200);
-				return;
+				return res;
 			}
 
 			//Initiate session
@@ -64,6 +65,7 @@ class Login: Action {
 			res.writeBody(json.toString, 200);
 			//writeln(e);
 		}
+		return res;
 	}
 }
 

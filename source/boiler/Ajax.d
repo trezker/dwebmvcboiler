@@ -15,32 +15,37 @@ class Ajax: Action {
 		handlers[name] = handler;
 	}
 
-	public void Perform(HttpRequest req, HttpResponse res) {
+	public HttpResponse Perform(HttpRequest req) {
+		HttpResponse res;
 		try {
 			string method = req.json["method"].str;
 			if(method in handlers) {
-				handlers[method].Perform (req, res);
+				res = handlers[method].Perform (req);
 			}
 			else {
+				res = new HttpResponse;
 				JSONValue json;
 				json["success"] = false;
 				res.writeBody(json.toString, 200);
 			}
 		}
 		catch(Exception e) {
+			res = new HttpResponse;
 			JSONValue json;
 			json["success"] = false;
 			res.writeBody(json.toString, 200);
 		}
+		return res;
 	}
 }
 
 class SuccessTestHandler : Action {
-	public void Perform(HttpRequest req, HttpResponse res) {
+	public HttpResponse Perform(HttpRequest req) {
+		HttpResponse res = new HttpResponse;
 		JSONValue json;
 		json["success"] = true;
 		res.writeBody(json.toString, 200);
-		return;
+		return res;
 	}
 }
 
