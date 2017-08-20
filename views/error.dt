@@ -1,7 +1,0 @@
-doctype html
-html
-	head
-		title Error - #{error.message}
-	body
-		h1 #{error.code}
-		p #{error.debugMessage}

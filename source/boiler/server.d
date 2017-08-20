@@ -41,11 +41,17 @@ public:
 		return true;
 	}
 
-	void errorPage(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error) {
-		res.render!("error.dt", req, error);
+	void ErrorPage(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error) {
+		string filepath = "pages/error.html";
+		string page = filepath.readText;
+
+		page = page.replace("#{error.message}", error.message);
+		page = page.replace("#{error.code}", to!string(error.code));
+
+		res.writeBody(page, "text/html; charset=UTF-8");
 	}
 
-	void get(HTTPServerRequest req, HTTPServerResponse res) {
+	void PerformGet(HTTPServerRequest req, HTTPServerResponse res) {
 		try {
 			string path = req.path;
 			auto splitpath = split(path, "/");

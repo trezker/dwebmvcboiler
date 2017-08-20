@@ -24,14 +24,14 @@ shared static this() {
 	auto settings = new HTTPServerSettings;
 	settings.port = 8080;
 	settings.bindAddresses = ["::1", "127.0.0.1"];
-	settings.errorPageHandler = toDelegate(&server.errorPage);
+	settings.errorPageHandler = toDelegate(&server.ErrorPage);
 	settings.sessionStore = new MemorySessionStore;
 
 	auto router = new URLRouter;
 	router.post("/ajax*", &server.PerformAjax);
 	router.get("/ws", handleWebSockets(&server.websocket));
 	router.get("/source/*", serveStaticFiles("./public/"));
-	router.get("/get/*", &server.get);
+	router.get("/get/*", &server.PerformGet);
 	router.get("/*", &server.page);
 
 	listenHTTP(settings, router);
