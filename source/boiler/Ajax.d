@@ -3,7 +3,7 @@ module boiler.Ajax;
 import std.json;
 import vibe.http.server;
 
-import boiler.HttpHandlerTester;
+import boiler.ActionTester;
 import boiler.model;
 import boiler.HttpRequest;
 import boiler.HttpResponse;
@@ -48,7 +48,7 @@ class SuccessTestHandler : Action {
 unittest {
 	Ajax ajax = new Ajax();
 
-	HTTPHandlerTester tester = new HTTPHandlerTester(&ajax.Perform);
+	ActionTester tester = new ActionTester(&ajax.Perform);
 
 	JSONValue json = tester.GetResponseJson();
 	assert(json["success"] == JSONValue(false));
@@ -58,7 +58,7 @@ unittest {
 unittest {
 	Ajax ajax = new Ajax();
 
-	HTTPHandlerTester tester = new HTTPHandlerTester(&ajax.Perform, "{\"method\": \"none\"}");
+	ActionTester tester = new ActionTester(&ajax.Perform, "{\"method\": \"none\"}");
 
 	JSONValue json = tester.GetResponseJson();
 	assert(json["success"] == JSONValue(false));
@@ -69,7 +69,7 @@ unittest {
 	Ajax ajax = new Ajax();
 	ajax.SetHandler("test", new SuccessTestHandler);
 
-	HTTPHandlerTester tester = new HTTPHandlerTester(&ajax.Perform, "{\"method\": \"test\"}");
+	ActionTester tester = new ActionTester(&ajax.Perform, "{\"method\": \"test\"}");
 
 	JSONValue json = tester.GetResponseJson();
 	assert(json["success"] == JSONValue(true));

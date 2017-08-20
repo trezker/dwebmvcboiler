@@ -6,12 +6,12 @@ import dauth;
 import vibe.http.server;
 import vibe.db.mongo.mongo;
 
-import boiler.HttpHandlerTester;
-import application.storage.user;
-import application.database;
+import boiler.ActionTester;
 import boiler.helpers;
 import boiler.HttpRequest;
 import boiler.HttpResponse;
+import application.storage.user;
+import application.database;
 
 class UserCreator: Action {
 	User_storage user_storage;
@@ -70,7 +70,7 @@ unittest {
 		UserCreator m = new UserCreator;
 		m.setup(new User_storage(database));
 
-		HTTPHandlerTester tester = new HTTPHandlerTester(&m.Perform);
+		ActionTester tester = new ActionTester(&m.Perform);
 
 		JSONValue json = tester.GetResponseJson();
 		assert(json["success"] == JSONValue(false));
@@ -91,7 +91,7 @@ unittest {
 		jsoninput["username"] = "testname";
 		jsoninput["password"] = "testpass";
 
-		HTTPHandlerTester tester = new HTTPHandlerTester(&m.Perform, jsoninput.toString);
+		ActionTester tester = new ActionTester(&m.Perform, jsoninput.toString);
 
 		JSONValue jsonoutput = tester.GetResponseJson();
 		assert(jsonoutput["success"] == JSONValue(true));
@@ -116,7 +116,7 @@ unittest {
 		jsoninput["username"] = username;
 		jsoninput["password"] = password;
 
-		HTTPHandlerTester tester = new HTTPHandlerTester(&m.Perform, jsoninput.toString);
+		ActionTester tester = new ActionTester(&m.Perform, jsoninput.toString);
 		
 		auto obj = user_storage.get_user_by_name(username);
 		assert(isSameHash(toPassword(password.dup), parseHash(obj["password"].get!string)));

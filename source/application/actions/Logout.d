@@ -4,7 +4,7 @@ import std.json;
 import std.stdio;
 import vibe.http.server;
 
-import boiler.HttpHandlerTester;
+import boiler.ActionTester;
 import boiler.helpers;
 import boiler.HttpRequest;
 import boiler.HttpResponse;
@@ -44,7 +44,7 @@ unittest {
 		jsoninput["username"] = "testname";
 		jsoninput["password"] = "testpass";
 
-		HTTPHandlerTester tester = new HTTPHandlerTester(&loginHandler.Perform, jsoninput.toString);
+		ActionTester tester = new ActionTester(&loginHandler.Perform, jsoninput.toString);
 
 		Logout logoutHandler = new Logout();
 		tester.Request(&logoutHandler.Perform);

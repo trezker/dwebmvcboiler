@@ -3,7 +3,7 @@ module application.testhelpers;
 import application.UserCreator;
 import application.database;
 import application.storage.user;
-import boiler.HttpHandlerTester;
+import boiler.ActionTester;
 import std.json;
 
 void CreateTestUser(string name, string password) {
@@ -15,7 +15,7 @@ void CreateTestUser(string name, string password) {
 	jsoninput["username"] = name;
 	jsoninput["password"] = password;
 
-	HTTPHandlerTester tester = new HTTPHandlerTester(&m.Perform, jsoninput.toString);
+	ActionTester tester = new ActionTester(&m.Perform, jsoninput.toString);
 
 	database.Sync();
 }

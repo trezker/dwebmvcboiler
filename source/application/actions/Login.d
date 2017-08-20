@@ -6,7 +6,7 @@ import dauth;
 import vibe.http.server;
 import vibe.db.mongo.mongo;
 
-import boiler.HttpHandlerTester;
+import boiler.ActionTester;
 import boiler.helpers;
 import application.storage.user;
 import application.database;
@@ -75,7 +75,7 @@ unittest {
 		Login m = new Login;
 		m.setup(new User_storage(database));
 
-		HTTPHandlerTester tester = new HTTPHandlerTester(&m.Perform);
+		ActionTester tester = new ActionTester(&m.Perform);
 
 		JSONValue json = tester.GetResponseJson();
 		assert(json["success"] == JSONValue(false));
@@ -96,7 +96,7 @@ unittest {
 		jsoninput["username"] = "testname";
 		jsoninput["password"] = "testpass";
 
-		HTTPHandlerTester tester = new HTTPHandlerTester(&m.Perform, jsoninput.toString);
+		ActionTester tester = new ActionTester(&m.Perform, jsoninput.toString);
 
 		JSONValue json = tester.GetResponseJson();
 		assert(json["success"] == JSONValue(false));
@@ -121,7 +121,7 @@ unittest {
 		jsoninput["username"] = "testname";
 		jsoninput["password"] = "testpass";
 
-		HTTPHandlerTester tester = new HTTPHandlerTester(&m.Perform, jsoninput.toString);
+		ActionTester tester = new ActionTester(&m.Perform, jsoninput.toString);
 
 		JSONValue json = tester.GetResponseJson();
 		assert(json["success"] == JSONValue(true));
@@ -148,7 +148,7 @@ unittest {
 		jsoninput["username"] = "testname";
 		jsoninput["password"] = "wrong";
 
-		HTTPHandlerTester tester = new HTTPHandlerTester(&m.Perform, jsoninput.toString);
+		ActionTester tester = new ActionTester(&m.Perform, jsoninput.toString);
 
 		JSONValue json = tester.GetResponseJson();
 		assert(json["success"] == JSONValue(false));

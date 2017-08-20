@@ -1,4 +1,4 @@
-module boiler.HttpHandlerTester;
+module boiler.ActionTester;
 
 import std.json;
 import std.stdio;
@@ -16,7 +16,7 @@ import boiler.helpers;
 import boiler.HttpRequest;
 import boiler.HttpResponse;
 
-class HTTPHandlerTester {
+class ActionTester {
 	HTTPServerRequest viberequest;
 	HTTPServerResponse viberesponse;
 	HttpRequest request;
@@ -211,7 +211,7 @@ class RequestSessionDummyHandler {
 unittest {
 	auto dummy = new CallFlagDummyHandler();
 	
-	auto tester = new HTTPHandlerTester(&dummy.handleRequest);
+	auto tester = new ActionTester(&dummy.handleRequest);
 
 	assert(dummy.called);
 }
@@ -220,7 +220,7 @@ unittest {
 unittest {
 	auto dummy = new JsonInputDummyHandler();
 	
-	auto tester = new HTTPHandlerTester(&dummy.handleRequest, "{ \"data\": 4 }");
+	auto tester = new ActionTester(&dummy.handleRequest, "{ \"data\": 4 }");
 
 	assert(dummy.receivedJson);
 }
@@ -229,7 +229,7 @@ unittest {
 unittest {
 	auto dummy = new SessionDummyHandler();
 	
-	auto tester = new HTTPHandlerTester(&dummy.handleRequest);
+	auto tester = new ActionTester(&dummy.handleRequest);
 	assertNotEqual(tester.GetResponseSessionID(), null);
 	string value = tester.GetResponseSessionValue!string("testkey");
 	assertEqual(value, "testvalue");
@@ -238,7 +238,7 @@ unittest {
 //Subsequent calls after session value is set should have that session in request
 unittest {
 	auto responsesessinohandler = new SessionDummyHandler();
-	auto tester = new HTTPHandlerTester(&responsesessinohandler.handleRequest);
+	auto tester = new ActionTester(&responsesessinohandler.handleRequest);
 
 	auto requestsessionhandler = new RequestSessionDummyHandler();
 	tester.Request(&requestsessionhandler.handleRequest);
