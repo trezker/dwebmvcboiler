@@ -35,7 +35,7 @@ class UserCreator: Action {
 			string password = req.json["password"].str;
 
 			//Check that username is not taken
-			auto obj = user_storage.get_user_by_name(username);
+			auto obj = user_storage.UserByName(username);
 			if(obj != Bson(null)) {
 				JSONValue json;
 				json["success"] = false;
@@ -45,7 +45,7 @@ class UserCreator: Action {
 			}
 
 			string hashedPassword = makeHash(toPassword(password.dup)).toString();
-			user_storage.create_user(username, hashedPassword);
+			user_storage.Create(username, hashedPassword);
 
 			//Write result
 			JSONValue json;
@@ -118,7 +118,7 @@ unittest {
 
 		ActionTester tester = new ActionTester(&m.Perform, jsoninput.toString);
 		
-		auto obj = user_storage.get_user_by_name(username);
+		auto obj = user_storage.UserByName(username);
 		assert(isSameHash(toPassword(password.dup), parseHash(obj["password"].get!string)));
 	}
 	finally {

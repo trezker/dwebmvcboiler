@@ -20,7 +20,7 @@ class User_storage {
 		collection = database.GetCollection("user");
 	}
 
-	void create_user(string username, string password) {
+	void Create(string username, string password) {
 		try {
 			collection.insert(
 				Bson([
@@ -43,7 +43,7 @@ class User_storage {
 
 		try {
 			User_storage us = new User_storage(database);
-			assertNotThrown(us.create_user("name", "pass"));
+			assertNotThrown(us.Create("name", "pass"));
 		}
 		finally {
 			database.ClearCollection("user");
@@ -57,8 +57,8 @@ class User_storage {
 		try {
 			User_storage us = new User_storage(database);
 			
-			assertNotThrown(us.create_user("name", "pass"));
-			assertNotThrown(us.create_user("name", "pass"));
+			assertNotThrown(us.Create("name", "pass"));
+			assertNotThrown(us.Create("name", "pass"));
 			
 			Bson query = Bson(["username" : Bson("name")]);
 			auto result = database.GetCollection("user").find(query);
@@ -70,7 +70,7 @@ class User_storage {
 		}
 	}
 
-	Bson get_user_by_name(string username) {
+	Bson UserByName(string username) {
 		auto condition = Bson(["username": Bson(username)]);
 		auto obj = collection.findOne(condition);
 		return obj;
@@ -83,9 +83,9 @@ class User_storage {
 		try {
 			User_storage us = new User_storage(database);
 			auto username = "name"; 
-			us.create_user("wrong", "");
-			us.create_user(username, "");
-			auto obj = us.get_user_by_name(username);
+			us.Create("wrong", "");
+			us.Create(username, "");
+			auto obj = us.UserByName(username);
 
 			assertEqual(obj["username"].get!string, username);
 		}
@@ -101,7 +101,7 @@ class User_storage {
 		try {
 			User_storage us = new User_storage(database);
 			auto username = "name"; 
-			auto obj = us.get_user_by_name(username);
+			auto obj = us.UserByName(username);
 			assertEqual(obj, Bson(null));
 		}
 		finally {
@@ -109,8 +109,9 @@ class User_storage {
 		}
 	}
 
-	Bson find_user_id(BsonObjectID id) {
-		auto conditions = Bson(["_id": Bson(id)]);
+	Bson UserById(string id) {
+		BsonObjectID oid = BsonObjectID.fromString(id);
+		auto conditions = Bson(["_id": Bson(oid)]);
 		auto obj = collection.findOne(conditions);
 		return obj;
 	}
@@ -122,14 +123,13 @@ class User_storage {
 		try {
 			User_storage us = new User_storage(database);
 			auto username = "name"; 
-			us.create_user("wrong", "");
-			us.create_user(username, "");
-			auto obj = us.get_user_by_name(username);
+			us.Create("wrong", "");
+			us.Create(username, "");
+			auto obj = us.UserByName(username);
 			//Testing how to pass around id as string and then using it against mongo.
 			BsonObjectID oid = obj["_id"].get!BsonObjectID;
 			string sid = oid.toString();
-			BsonObjectID nid = BsonObjectID.fromString(sid);
-			auto objid = us.find_user_id(nid);
+			auto objid = us.UserById(sid);
 
 			assertEqual(objid["username"].get!string, username);
 		}

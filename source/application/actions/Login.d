@@ -29,7 +29,7 @@ class Login: Action {
 			string password = req.json["password"].str;
 
 			//Get user
-			auto obj = user_storage.get_user_by_name(username);
+			auto obj = user_storage.UserByName(username);
 			if(obj == Bson(null)) {
 				JSONValue json;
 				json["success"] = false;

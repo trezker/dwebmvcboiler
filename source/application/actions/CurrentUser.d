@@ -25,8 +25,7 @@ class CurrentUser: Action {
 			string username = "";
 			if(request.session) {
 				auto id = request.session.get!string("id");
-				BsonObjectID nid = BsonObjectID.fromString(id);
-				auto user = user_storage.find_user_id(nid);
+				auto user = user_storage.UserById(id);
 				username = user["username"].get!string;
 			}
 
