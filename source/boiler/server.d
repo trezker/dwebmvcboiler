@@ -72,16 +72,9 @@ public:
 
 	void PerformAjax(HTTPServerRequest req, HTTPServerResponse res) {
 		try {
-			string model = req.json["model"].to!string;
-			string method = req.json["method"].to!string;
-			if(model in models && method in models[model]) {
-				HttpRequest request = CreateHttpRequestFromVibeHttpRequest(req, sessionstore);
-				HttpResponse response = models[model][method].call (request);
-				RenderVibeHttpResponseFromRequestAndResponse(res, request, response);
-			}
-			else {
-				res.writeJsonBody("Model/method does not exist");
-			}
+			HttpRequest request = CreateHttpRequestFromVibeHttpRequest(req, sessionstore);
+			HttpResponse response = ajax.Perform (request);
+			RenderVibeHttpResponseFromRequestAndResponse(res, request, response);
 		}
 		catch(Exception e) {
 			logInfo(e.msg);

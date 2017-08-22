@@ -9,18 +9,18 @@ import boiler.HttpRequest;
 import boiler.HttpResponse;
 
 class Ajax: Action {
-	private Action[string] handlers;
+	private Action[string] actions;
 
-	public void SetHandler(string name, Action handler) {
-		handlers[name] = handler;
+	public void SetAction(string name, Action action) {
+		actions[name] = action;
 	}
 
 	public HttpResponse Perform(HttpRequest req) {
 		HttpResponse res;
 		try {
-			string method = req.json["method"].str;
-			if(method in handlers) {
-				res = handlers[method].Perform (req);
+			string action = req.json["action"].str;
+			if(action in actions) {
+				res = actions[action].Perform (req);
 			}
 			else {
 				res = new HttpResponse;
@@ -63,7 +63,7 @@ unittest {
 unittest {
 	Ajax ajax = new Ajax();
 
-	ActionTester tester = new ActionTester(&ajax.Perform, "{\"method\": \"none\"}");
+	ActionTester tester = new ActionTester(&ajax.Perform, "{\"action\": \"none\"}");
 
 	JSONValue json = tester.GetResponseJson();
 	assert(json["success"] == JSONValue(false));
@@ -72,9 +72,9 @@ unittest {
 //Call to method that exists should succeed.
 unittest {
 	Ajax ajax = new Ajax();
-	ajax.SetHandler("test", new SuccessTestHandler);
+	ajax.SetAction("test", new SuccessTestHandler);
 
-	ActionTester tester = new ActionTester(&ajax.Perform, "{\"method\": \"test\"}");
+	ActionTester tester = new ActionTester(&ajax.Perform, "{\"action\": \"test\"}");
 
 	JSONValue json = tester.GetResponseJson();
 	assert(json["success"] == JSONValue(true));

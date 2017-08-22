@@ -7,8 +7,10 @@ import mondo;
 import boiler.model;
 import boiler.Ajax;
 
-//import application.user;
 import application.UserCreator;
+import application.Login;
+import application.Logout;
+import application.CurrentUser;
 
 class Application {
 	//Mongo mongo;
@@ -32,7 +34,10 @@ class Application {
 	}
 
 	void SetupAjaxMethods(Ajax ajax) {
-		ajax.SetHandler("create_user", new UserCreator());
+		ajax.SetAction("CreateUser", new UserCreator());
+		ajax.SetAction("Login", new Login());
+		ajax.SetAction("Logout", new Logout());
+		ajax.SetAction("CurrentUser", new CurrentUser());
 	}
 
 	string rewrite_path(HTTPServerRequest req) {
