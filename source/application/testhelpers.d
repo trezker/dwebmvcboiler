@@ -1,10 +1,11 @@
 module application.testhelpers;
 
-import application.UserCreator;
+import std.json;
+import boiler.ActionTester;
 import application.database;
 import application.storage.user;
-import boiler.ActionTester;
-import std.json;
+import application.UserCreator;
+import application.Login;
 
 void CreateTestUser(string name, string password) {
 	Database database = GetDatabase();
@@ -18,4 +19,15 @@ void CreateTestUser(string name, string password) {
 	ActionTester tester = new ActionTester(&m.Perform, jsoninput.toString);
 
 	database.Sync();
+}
+
+ActionTester TestLogin(string name, string password) {
+	Database database = GetDatabase();
+	Login login = new Login;
+	login.setup(new User_storage(database));
+	JSONValue jsoninput;
+	jsoninput["username"] = name;
+	jsoninput["password"] = password;
+	ActionTester tester = new ActionTester(&login.Perform, jsoninput.toString);
+	return tester;
 }

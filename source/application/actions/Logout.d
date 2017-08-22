@@ -40,13 +40,7 @@ unittest {
 	try {
 		CreateTestUser("testname", "testpass");
 
-		Login loginHandler = new Login;
-		loginHandler.setup(new User_storage(database));
-		JSONValue jsoninput;
-		jsoninput["username"] = "testname";
-		jsoninput["password"] = "testpass";
-
-		ActionTester tester = new ActionTester(&loginHandler.Perform, jsoninput.toString);
+		auto tester = TestLogin("testname", "testpass");
 
 		Logout logoutHandler = new Logout();
 		tester.Request(&logoutHandler.Perform);

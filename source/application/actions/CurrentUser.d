@@ -12,6 +12,8 @@ import boiler.HttpResponse;
 import application.storage.user;
 import application.database;
 
+import std.typecons;
+
 class CurrentUser: Action {
 	User_storage user_storage;
 
@@ -47,20 +49,13 @@ class CurrentUser: Action {
 unittest {
 	import application.testhelpers;
 	import application.database;
-	import application.Login;
 	import application.storage.user;
 
 	Database database = GetDatabase();
 	
 	try {
 		CreateTestUser("testname", "testpass");
-
-		Login login = new Login;
-		login.setup(new User_storage(database));
-		JSONValue jsoninput;
-		jsoninput["username"] = "testname";
-		jsoninput["password"] = "testpass";
-		ActionTester tester = new ActionTester(&login.Perform, jsoninput.toString);
+		auto tester = TestLogin("testname", "testpass");
 
 		CurrentUser currentUser = new CurrentUser();
 		currentUser.Setup(new User_storage(database));

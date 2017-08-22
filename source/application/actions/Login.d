@@ -6,13 +6,13 @@ import dauth;
 import vibe.http.server;
 import vibe.db.mongo.mongo;
 
+import boiler.HttpRequest;
+import boiler.HttpResponse;
 import boiler.ActionTester;
 import boiler.helpers;
 import application.storage.user;
 import application.database;
-
-import boiler.HttpRequest;
-import boiler.HttpResponse;
+import application.testhelpers;
 
 class Login: Action {
 	User_storage user_storage;
@@ -92,13 +92,7 @@ unittest {
 	Database database = GetDatabase();
 	
 	try {
-		Login m = new Login;
-		m.setup(new User_storage(database));
-		JSONValue jsoninput;
-		jsoninput["username"] = "testname";
-		jsoninput["password"] = "testpass";
-
-		ActionTester tester = new ActionTester(&m.Perform, jsoninput.toString);
+		auto tester = TestLogin("testname", "testpass");
 
 		JSONValue json = tester.GetResponseJson();
 		assert(json["success"] == JSONValue(false));
@@ -144,13 +138,7 @@ unittest {
 	try {
 		CreateTestUser("testname", "testpass");
 
-		Login m = new Login;
-		m.setup(new User_storage(database));
-		JSONValue jsoninput;
-		jsoninput["username"] = "testname";
-		jsoninput["password"] = "wrong";
-
-		ActionTester tester = new ActionTester(&m.Perform, jsoninput.toString);
+		auto tester = TestLogin("testname", "wrong");
 
 		JSONValue json = tester.GetResponseJson();
 		assert(json["success"] == JSONValue(false));
