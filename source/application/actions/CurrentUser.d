@@ -17,7 +17,7 @@ import std.typecons;
 class CurrentUser: Action {
 	User_storage user_storage;
 
-	void Setup(User_storage user_storage) {
+	this(User_storage user_storage) {
 		this.user_storage = user_storage;
 	}	
 
@@ -57,8 +57,7 @@ unittest {
 		CreateTestUser("testname", "testpass");
 		auto tester = TestLogin("testname", "testpass");
 
-		CurrentUser currentUser = new CurrentUser();
-		currentUser.Setup(new User_storage(database));
+		CurrentUser currentUser = new CurrentUser(new User_storage(database));
 		tester.Request(&currentUser.Perform);
 		
 		JSONValue json = tester.GetResponseJson();
@@ -80,8 +79,7 @@ unittest {
 	Database database = GetDatabase();
 	
 	try {
-		CurrentUser currentUser = new CurrentUser();
-		currentUser.Setup(new User_storage(database));
+		CurrentUser currentUser = new CurrentUser(new User_storage(database));
 		ActionTester tester = new ActionTester(&currentUser.Perform);
 		
 		JSONValue json = tester.GetResponseJson();

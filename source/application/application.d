@@ -45,11 +45,10 @@ class Application {
 
 		auto login = new Login(userStorage);
 		ajax.SetAction("Login", login);
-		
+
 		ajax.SetAction("Logout", new Logout);
 
-		auto currentUser = new CurrentUser;
-		currentUser.Setup(userStorage);
+		auto currentUser = new CurrentUser(userStorage);
 		ajax.SetAction("CurrentUser", currentUser);
 	}
 
