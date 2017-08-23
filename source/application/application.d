@@ -43,9 +43,9 @@ class Application {
 		auto createUser = new UserCreator(userStorage);
 		ajax.SetAction("CreateUser", createUser);
 
-		auto login = new Login;
-		login.setup(userStorage);
+		auto login = new Login(userStorage);
 		ajax.SetAction("Login", login);
+		
 		ajax.SetAction("Logout", new Logout);
 
 		auto currentUser = new CurrentUser;

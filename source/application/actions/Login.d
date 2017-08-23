@@ -17,7 +17,7 @@ import application.testhelpers;
 class Login: Action {
 	User_storage user_storage;
 
-	void setup(User_storage user_storage) {
+	this(User_storage user_storage) {
 		this.user_storage = user_storage;
 	}	
 
@@ -74,8 +74,7 @@ unittest {
 	Database database = GetDatabase();
 	
 	try {
-		Login m = new Login;
-		m.setup(new User_storage(database));
+		Login m = new Login(new User_storage(database));
 
 		ActionTester tester = new ActionTester(&m.Perform);
 
@@ -111,13 +110,7 @@ unittest {
 	try {
 		CreateTestUser("testname", "testpass");
 
-		Login m = new Login;
-		m.setup(new User_storage(database));
-		JSONValue jsoninput;
-		jsoninput["username"] = "testname";
-		jsoninput["password"] = "testpass";
-
-		ActionTester tester = new ActionTester(&m.Perform, jsoninput.toString);
+		auto tester = TestLogin("testname", "testpass");
 
 		JSONValue json = tester.GetResponseJson();
 		assert(json["success"] == JSONValue(true));

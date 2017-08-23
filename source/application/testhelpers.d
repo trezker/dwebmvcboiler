@@ -22,8 +22,7 @@ void CreateTestUser(string name, string password) {
 
 ActionTester TestLogin(string name, string password) {
 	Database database = GetDatabase();
-	Login login = new Login;
-	login.setup(new User_storage(database));
+	Login login = new Login(new User_storage(database));
 	JSONValue jsoninput;
 	jsoninput["username"] = name;
 	jsoninput["password"] = password;
