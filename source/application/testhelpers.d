@@ -10,8 +10,7 @@ import application.Login;
 void CreateTestUser(string name, string password) {
 	Database database = GetDatabase();
 	
-	UserCreator m = new UserCreator;
-	m.setup(new User_storage(database));
+	UserCreator m = new UserCreator(new User_storage(database));
 	JSONValue jsoninput;
 	jsoninput["username"] = name;
 	jsoninput["password"] = password;

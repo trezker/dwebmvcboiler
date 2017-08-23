@@ -40,8 +40,7 @@ class Application {
 		Database database = GetDatabase();
 		auto userStorage = new User_storage(database);
 
-		auto createUser = new UserCreator;
-		createUser.setup(userStorage);
+		auto createUser = new UserCreator(userStorage);
 		ajax.SetAction("CreateUser", createUser);
 
 		auto login = new Login;

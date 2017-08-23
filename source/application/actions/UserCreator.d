@@ -16,9 +16,9 @@ import application.database;
 class UserCreator: Action {
 	User_storage user_storage;
 
-	void setup(User_storage user_storage) {
+	this(User_storage user_storage) {
 		this.user_storage = user_storage;
-	}	
+	}
 
 	HttpResponse Perform(HttpRequest req) {
 		//Total remake.
@@ -67,8 +67,7 @@ unittest {
 	Database database = GetDatabase();
 	
 	try {
-		UserCreator m = new UserCreator;
-		m.setup(new User_storage(database));
+		UserCreator m = new UserCreator(new User_storage(database));
 
 		ActionTester tester = new ActionTester(&m.Perform);
 
@@ -85,8 +84,7 @@ unittest {
 	Database database = GetDatabase();
 	
 	try {
-		UserCreator m = new UserCreator;
-		m.setup(new User_storage(database));
+		UserCreator m = new UserCreator(new User_storage(database));
 		JSONValue jsoninput;
 		jsoninput["username"] = "testname";
 		jsoninput["password"] = "testpass";
@@ -109,9 +107,8 @@ unittest {
 		string username = "testname";
 		string password = "testpass";
 
-		UserCreator m = new UserCreator;
 		auto user_storage = new User_storage(database);
-		m.setup(user_storage);
+		UserCreator m = new UserCreator(user_storage);
 		JSONValue jsoninput;
 		jsoninput["username"] = username;
 		jsoninput["password"] = password;
