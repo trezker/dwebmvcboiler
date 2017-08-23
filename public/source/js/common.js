@@ -14,7 +14,7 @@ function ajax_post(data, done) {
 		method		: "POST",
 		dataType   	: 'json',
 		contentType	: 'application/json; charset=UTF-8',
-		url: "/ajax/" + data.model + "/" + data.method,
+		url: "/ajax/" + data.action,
 		data: JSON.stringify(data)
 	})
 	.success(done);

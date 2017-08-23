@@ -6,7 +6,10 @@ import vibe.core.log;
 import mondo;
 import boiler.model;
 import boiler.Ajax;
+import boiler.HttpRequest;
 
+import application.database;
+import application.storage.user;
 import application.UserCreator;
 import application.Login;
 import application.Logout;
@@ -34,16 +37,27 @@ class Application {
 	}
 
 	void SetupAjaxMethods(Ajax ajax) {
-		ajax.SetAction("CreateUser", new UserCreator());
-		ajax.SetAction("Login", new Login());
-		ajax.SetAction("Logout", new Logout());
-		ajax.SetAction("CurrentUser", new CurrentUser());
+		Database database = GetDatabase();
+		auto userStorage = new User_storage(database);
+
+		auto createUser = new UserCreator;
+		createUser.setup(userStorage);
+		ajax.SetAction("CreateUser", createUser);
+
+		auto login = new Login;
+		login.setup(userStorage);
+		ajax.SetAction("Login", login);
+		ajax.SetAction("Logout", new Logout);
+
+		auto currentUser = new CurrentUser;
+		currentUser.Setup(userStorage);
+		ajax.SetAction("CurrentUser", currentUser);
 	}
 
-	string rewrite_path(HTTPServerRequest req) {
-		if(!req.session) {
+	string RewritePath(HttpRequest request) {
+		if(!request.session) {
 			return "/login";
 		}
-		return req.path;
+		return request.path;
 	}
 }

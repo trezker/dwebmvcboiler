@@ -7,6 +7,7 @@ import std.functional;
 import std.conv;
 import std.array;
 import std.format;
+import std.stdio;
 import vibe.http.server;
 import vibe.core.log;
 import vibe.http.websockets : WebSocket;
@@ -83,7 +84,8 @@ public:
 	
 	void page(HTTPServerRequest req, HTTPServerResponse res) {
 		try {
-			string path = application.rewrite_path(req);
+			HttpRequest request = CreateHttpRequestFromVibeHttpRequest(req, sessionstore);
+			string path = application.RewritePath(request);
 			if(path == "/") {
 				path = "/index";
 			}

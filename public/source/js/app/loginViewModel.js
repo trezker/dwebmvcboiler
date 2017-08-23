@@ -4,18 +4,17 @@ var loginViewModel = {
 	sign_in : function() {
 		var data = ko.toJS(this);
 		data.model = "user";
-		data.method = "login_password";
+		data.action = "Login";
 		ajax_post(data, function(returnedData) {
 			console.log(returnedData);
-		    if(returnedData == true) {
+		    if(returnedData.success == true) {
 	    		window.location.href = window.location.href;
 		    }
 		});
 	},
 	sign_up : function() {
 		var data = ko.toJS(this);
-		data.model = "user";
-		data.method = "create_user";
+		data.action = "CreateUser";
 		ajax_post(data, function(returnedData) {
 			console.log(returnedData);
 		    if(returnedData == true) {

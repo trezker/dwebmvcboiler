@@ -1,6 +1,7 @@
 module boiler.Ajax;
 
 import std.json;
+import std.stdio;
 import vibe.http.server;
 
 import boiler.ActionTester;

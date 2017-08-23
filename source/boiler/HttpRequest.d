@@ -18,6 +18,7 @@ class HttpRequest {
 	private SessionStore sessionstore;
 	Session session;
 	JSONValue json;
+	string path;
 
 	this(SessionStore sessionstore) {
 		this.sessionstore = sessionstore;
@@ -52,6 +53,9 @@ HttpRequest CreateHttpRequestFromVibeHttpRequest(HTTPServerRequest viberequest, 
 		request.session = sessionstore.open(val);
 		if (request.session) break;
 	}
+
+	request.path = viberequest.path;
+	
 	return request;
 }
 
