@@ -18,7 +18,7 @@ import vibe.http.fileserver;
 import boiler.Ajax;
 import boiler.HttpRequest;
 import boiler.HttpResponse;
-import application.application;
+import application.Application;
 
 class Server {
 private:
@@ -26,7 +26,7 @@ private:
 	Ajax ajax;
 	SessionStore sessionstore;
 public:
-	bool setup() {
+	bool Setup() {
 		ajax = new Ajax();
 		application = new Application();
 		application.SetupAjaxMethods(ajax);
@@ -34,7 +34,7 @@ public:
 		return true;
 	}
 
-	void ErrorPage(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error) {
+	void Error(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error) {
 		string filepath = "pages/error.html";
 		string page = filepath.readText;
 
@@ -73,7 +73,7 @@ public:
 		}
 	}
 
-	void websocket(scope WebSocket socket) {
+	void Websocket(scope WebSocket socket) {
 		int counter = 0;
 		logInfo("Got new web socket connection.");
 		while (true) {
@@ -86,12 +86,12 @@ public:
 		logInfo("Client disconnected.");
 	}
 
-	void preWriteCallback(scope HTTPServerRequest req, scope HTTPServerResponse res, ref string path) {
+	void PreWriteCallback(scope HTTPServerRequest req, scope HTTPServerResponse res, ref string path) {
 		logInfo("Path: '%s'.", path);
 		logInfo("req.path: '%s'.", req.path);
 	};
 
-	void daemon() {
+	void Daemon() {
 		while (true) {
 			sleep(1.seconds);
 		}

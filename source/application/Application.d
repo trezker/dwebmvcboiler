@@ -1,4 +1,4 @@
-module application.application;
+module application.Application;
 
 import vibe.http.server;
 import vibe.core.log;
