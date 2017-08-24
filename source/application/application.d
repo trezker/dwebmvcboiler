@@ -16,26 +16,6 @@ import application.Logout;
 import application.CurrentUser;
 
 class Application {
-	//Mongo mongo;
-	//User_model user_model;
-
-	bool initialize() {
-		try {
-			MongoPool pool = new MongoPool("mongodb://localhost");
-			Mongo mongo = pool.pop;
-			//user_model = new User_model;
-		}
-		catch(Exception e) {
-			logInfo(e.msg);
-			return false;
-		}
-	    return true;
-	}
-
-	void setup_models(ref Model_method[string][string] models) {
-		//user_model.setup(mongo, models);
-	}
-
 	void SetupAjaxMethods(Ajax ajax) {
 		Database database = GetDatabase();
 		auto userStorage = new User_storage(database);

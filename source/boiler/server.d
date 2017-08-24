@@ -23,7 +23,6 @@ import boiler.HttpResponse;
 
 class Server {
 private:
-	Model_method[string][string] models;
 	Application application;
 	Ajax ajax;
 	SessionStore sessionstore;
@@ -31,12 +30,6 @@ public:
 	bool setup() {
 		ajax = new Ajax();
 		application = new Application();
-		if(!application.initialize()) {
-			logInfo("Application initialization failed.");
-			return false;
-		}
-
-		application.setup_models(models);
 		application.SetupAjaxMethods(ajax);
 		sessionstore = new MemorySessionStore ();
 		return true;
@@ -50,25 +43,6 @@ public:
 		page = page.replace("#{error.code}", to!string(error.code));
 
 		res.writeBody(page, "text/html; charset=UTF-8");
-	}
-
-	void PerformGet(HTTPServerRequest req, HTTPServerResponse res) {
-		try {
-			string path = req.path;
-			auto splitpath = split(path, "/");
-			if(splitpath.length < 4)
-				return;
-			string model = splitpath[2];
-			string method = splitpath[3];
-			if(model in models && method in models[model]) {
-				HttpRequest request = CreateHttpRequestFromVibeHttpRequest(req, sessionstore);
-				HttpResponse response = models[model][method].call (request);
-				RenderVibeHttpResponseFromRequestAndResponse(res, request, response);
-			}
-		}
-		catch(Exception e) {
-			logInfo(e.msg);
-		}
 	}
 
 	void PerformAjax(HTTPServerRequest req, HTTPServerResponse res) {
