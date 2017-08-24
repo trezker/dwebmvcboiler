@@ -2,7 +2,7 @@ module application.testhelpers;
 
 import std.json;
 import boiler.ActionTester;
-import application.database;
+import application.Database;
 import application.storage.user;
 import application.CreateUser;
 import application.Login;

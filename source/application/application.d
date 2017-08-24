@@ -7,7 +7,7 @@ import mondo;
 import boiler.Ajax;
 import boiler.HttpRequest;
 
-import application.database;
+import application.Database;
 import application.storage.user;
 import application.CreateUser;
 import application.Login;

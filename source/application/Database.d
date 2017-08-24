@@ -1,4 +1,4 @@
-module application.database;
+module application.Database;
 
 import vibe.db.mongo.mongo;
 

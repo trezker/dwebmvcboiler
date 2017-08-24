@@ -10,8 +10,8 @@ import boiler.ActionTester;
 import boiler.helpers;
 import boiler.HttpRequest;
 import boiler.HttpResponse;
+import application.Database;
 import application.storage.user;
-import application.database;
 
 class CreateUser: Action {
 	User_storage user_storage;

@@ -10,7 +10,7 @@ import vibe.db.mongo.mongo;
 import vibe.data.bson;
 
 import boiler.helpers;
-import application.database;
+import application.Database;
 
 class User_storage {
 	Database database;

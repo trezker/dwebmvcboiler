@@ -11,7 +11,7 @@ import boiler.HttpResponse;
 import boiler.ActionTester;
 import boiler.helpers;
 import application.storage.user;
-import application.database;
+import application.Database;
 import application.testhelpers;
 
 class Login: Action {

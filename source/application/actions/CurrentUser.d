@@ -10,7 +10,6 @@ import boiler.helpers;
 import boiler.HttpRequest;
 import boiler.HttpResponse;
 import application.storage.user;
-import application.database;
 
 import std.typecons;
 
@@ -48,8 +47,7 @@ class CurrentUser: Action {
 //CurrentUser should return the name of logged in user
 unittest {
 	import application.testhelpers;
-	import application.database;
-	import application.storage.user;
+	import application.Database;
 
 	Database database = GetDatabase();
 	
@@ -72,9 +70,8 @@ unittest {
 //CurrentUser should give no name if not logged in
 unittest {
 	import application.testhelpers;
-	import application.database;
+	import application.Database;
 	import application.Login;
-	import application.storage.user;
 
 	Database database = GetDatabase();
 	

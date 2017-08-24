@@ -31,7 +31,7 @@ class Logout: Action {
 //Logout should succeed and session should not contain a user id
 unittest {
 	import application.testhelpers;
-	import application.database;
+	import application.Database;
 	import application.Login;
 	import application.storage.user;
 
