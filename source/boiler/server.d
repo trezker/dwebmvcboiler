@@ -55,7 +55,7 @@ public:
 		}
 	}
 	
-	void page(HTTPServerRequest req, HTTPServerResponse res) {
+	void Page(HTTPServerRequest req, HTTPServerResponse res) {
 		try {
 			HttpRequest request = CreateHttpRequestFromVibeHttpRequest(req, sessionstore);
 			string path = application.RewritePath(request);

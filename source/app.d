@@ -31,7 +31,7 @@ shared static this() {
 	router.post("/ajax*", &server.PerformAjax);
 	router.get("/ws", handleWebSockets(&server.websocket));
 	router.get("/source/*", serveStaticFiles("./public/"));
-	router.get("/*", &server.page);
+	router.get("/*", &server.Page);
 
 	listenHTTP(settings, router);
 
