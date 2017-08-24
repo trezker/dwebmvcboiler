@@ -13,7 +13,6 @@ import vibe.core.log;
 import vibe.http.websockets : WebSocket;
 import vibe.core.core : sleep;
 import core.time;
-import boiler.model;
 import boiler.Ajax;
 import vibe.http.fileserver;
 

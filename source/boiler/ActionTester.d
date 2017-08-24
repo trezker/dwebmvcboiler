@@ -11,10 +11,11 @@ import vibe.inet.message;
 import vibe.stream.memory;
 import vibe.stream.operations;
 
-import boiler.model;
 import boiler.helpers;
 import boiler.HttpRequest;
 import boiler.HttpResponse;
+
+alias Request_delegate = HttpResponse delegate(HttpRequest req);
 
 class ActionTester {
 	HTTPServerRequest viberequest;

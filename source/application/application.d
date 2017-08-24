@@ -4,7 +4,6 @@ import vibe.http.server;
 import vibe.core.log;
 
 import mondo;
-import boiler.model;
 import boiler.Ajax;
 import boiler.HttpRequest;
 

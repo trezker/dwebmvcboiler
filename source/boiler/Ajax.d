@@ -5,7 +5,6 @@ import std.stdio;
 import vibe.http.server;
 
 import boiler.ActionTester;
-import boiler.model;
 import boiler.HttpRequest;
 import boiler.HttpResponse;
 
