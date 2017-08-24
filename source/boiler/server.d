@@ -8,17 +8,17 @@ import std.conv;
 import std.array;
 import std.format;
 import std.stdio;
+import core.time;
 import vibe.http.server;
 import vibe.core.log;
 import vibe.http.websockets : WebSocket;
 import vibe.core.core : sleep;
-import core.time;
-import boiler.Ajax;
 import vibe.http.fileserver;
 
-import application.application;
+import boiler.Ajax;
 import boiler.HttpRequest;
 import boiler.HttpResponse;
+import application.application;
 
 class Server {
 private:
