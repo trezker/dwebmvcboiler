@@ -10,7 +10,7 @@ import boiler.HttpRequest;
 
 import application.database;
 import application.storage.user;
-import application.UserCreator;
+import application.CreateUser;
 import application.Login;
 import application.Logout;
 import application.CurrentUser;
@@ -40,7 +40,7 @@ class Application {
 		Database database = GetDatabase();
 		auto userStorage = new User_storage(database);
 
-		auto createUser = new UserCreator(userStorage);
+		auto createUser = new CreateUser(userStorage);
 		ajax.SetAction("CreateUser", createUser);
 
 		auto login = new Login(userStorage);

@@ -1,4 +1,4 @@
-module application.UserCreator;
+module application.CreateUser;
 
 import std.json;
 import std.stdio;
@@ -13,7 +13,7 @@ import boiler.HttpResponse;
 import application.storage.user;
 import application.database;
 
-class UserCreator: Action {
+class CreateUser: Action {
 	User_storage user_storage;
 
 	this(User_storage user_storage) {
@@ -67,7 +67,7 @@ unittest {
 	Database database = GetDatabase();
 	
 	try {
-		UserCreator m = new UserCreator(new User_storage(database));
+		CreateUser m = new CreateUser(new User_storage(database));
 
 		ActionTester tester = new ActionTester(&m.Perform);
 
@@ -84,7 +84,7 @@ unittest {
 	Database database = GetDatabase();
 	
 	try {
-		UserCreator m = new UserCreator(new User_storage(database));
+		CreateUser m = new CreateUser(new User_storage(database));
 		JSONValue jsoninput;
 		jsoninput["username"] = "testname";
 		jsoninput["password"] = "testpass";
@@ -108,7 +108,7 @@ unittest {
 		string password = "testpass";
 
 		auto user_storage = new User_storage(database);
-		UserCreator m = new UserCreator(user_storage);
+		CreateUser m = new CreateUser(user_storage);
 		JSONValue jsoninput;
 		jsoninput["username"] = username;
 		jsoninput["password"] = password;

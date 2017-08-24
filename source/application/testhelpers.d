@@ -4,13 +4,13 @@ import std.json;
 import boiler.ActionTester;
 import application.database;
 import application.storage.user;
-import application.UserCreator;
+import application.CreateUser;
 import application.Login;
 
 void CreateTestUser(string name, string password) {
 	Database database = GetDatabase();
 	
-	UserCreator m = new UserCreator(new User_storage(database));
+	CreateUser m = new CreateUser(new User_storage(database));
 	JSONValue jsoninput;
 	jsoninput["username"] = name;
 	jsoninput["password"] = password;
