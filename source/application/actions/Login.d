@@ -71,7 +71,7 @@ class Login: Action {
 
 //Login user without parameters should fail
 unittest {
-	Database database = GetDatabase();
+	Database database = GetDatabase("test");
 	
 	try {
 		Login m = new Login(new User_storage(database));
@@ -88,7 +88,7 @@ unittest {
 
 //Login user that doesn't exist should fail
 unittest {
-	Database database = GetDatabase();
+	Database database = GetDatabase("test");
 	
 	try {
 		auto tester = TestLogin("testname", "testpass");
@@ -105,7 +105,7 @@ unittest {
 unittest {
 	import application.testhelpers;
 
-	Database database = GetDatabase();
+	Database database = GetDatabase("test");
 	
 	try {
 		CreateTestUser("testname", "testpass");
@@ -126,7 +126,7 @@ unittest {
 unittest {
 	import application.testhelpers;
 
-	Database database = GetDatabase();
+	Database database = GetDatabase("test");
 	
 	try {
 		CreateTestUser("testname", "testpass");

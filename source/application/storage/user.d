@@ -39,7 +39,7 @@ class User_storage {
 
 	/// create user
 	unittest {
-		Database database = GetDatabase();
+		Database database = GetDatabase("test");
 
 		try {
 			User_storage us = new User_storage(database);
@@ -52,7 +52,7 @@ class User_storage {
 
 	/// unique username
 	unittest {
-		Database database = GetDatabase();
+		Database database = GetDatabase("test");
 
 		try {
 			User_storage us = new User_storage(database);
@@ -78,7 +78,7 @@ class User_storage {
 
 	/// find user
 	unittest {
-		Database database = GetDatabase();
+		Database database = GetDatabase("test");
 
 		try {
 			User_storage us = new User_storage(database);
@@ -96,7 +96,7 @@ class User_storage {
 
 	/// user not found
 	unittest {
-		Database database = GetDatabase();
+		Database database = GetDatabase("test");
 
 		try {
 			User_storage us = new User_storage(database);
@@ -118,7 +118,7 @@ class User_storage {
 
 	/// find user id
 	unittest {
-		Database database = GetDatabase();
+		Database database = GetDatabase("test");
 
 		try {
 			User_storage us = new User_storage(database);

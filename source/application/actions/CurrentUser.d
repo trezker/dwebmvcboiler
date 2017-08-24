@@ -49,7 +49,7 @@ unittest {
 	import application.testhelpers;
 	import application.Database;
 
-	Database database = GetDatabase();
+	Database database = GetDatabase("test");
 	
 	try {
 		CreateTestUser("testname", "testpass");
@@ -73,7 +73,7 @@ unittest {
 	import application.Database;
 	import application.Login;
 
-	Database database = GetDatabase();
+	Database database = GetDatabase("test");
 	
 	try {
 		CurrentUser currentUser = new CurrentUser(new User_storage(database));

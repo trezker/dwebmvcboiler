@@ -16,7 +16,7 @@ import application.CurrentUser;
 
 class Application {
 	void SetupAjaxMethods(Ajax ajax) {
-		Database database = GetDatabase();
+		Database database = GetDatabase(null);
 		auto userStorage = new User_storage(database);
 
 		auto createUser = new CreateUser(userStorage);

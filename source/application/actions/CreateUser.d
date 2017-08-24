@@ -64,7 +64,7 @@ class CreateUser: Action {
 
 //Create user without parameters should fail.
 unittest {
-	Database database = GetDatabase();
+	Database database = GetDatabase("test");
 	
 	try {
 		CreateUser m = new CreateUser(new User_storage(database));
@@ -81,7 +81,7 @@ unittest {
 
 //Create user with name and password should succeed
 unittest {
-	Database database = GetDatabase();
+	Database database = GetDatabase("test");
 	
 	try {
 		CreateUser m = new CreateUser(new User_storage(database));
@@ -101,7 +101,7 @@ unittest {
 
 //Created user should have a hashed password
 unittest {
-	Database database = GetDatabase();
+	Database database = GetDatabase("test");
 	
 	try {
 		string username = "testname";

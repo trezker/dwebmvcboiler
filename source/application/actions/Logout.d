@@ -35,7 +35,7 @@ unittest {
 	import application.Login;
 	import application.storage.user;
 
-	Database database = GetDatabase();
+	Database database = GetDatabase("test");
 	
 	try {
 		CreateTestUser("testname", "testpass");

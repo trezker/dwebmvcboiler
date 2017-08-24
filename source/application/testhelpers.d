@@ -8,7 +8,7 @@ import application.CreateUser;
 import application.Login;
 
 void CreateTestUser(string name, string password) {
-	Database database = GetDatabase();
+	Database database = GetDatabase("test");
 	
 	CreateUser m = new CreateUser(new User_storage(database));
 	JSONValue jsoninput;
@@ -21,7 +21,7 @@ void CreateTestUser(string name, string password) {
 }
 
 ActionTester TestLogin(string name, string password) {
-	Database database = GetDatabase();
+	Database database = GetDatabase("test");
 	Login login = new Login(new User_storage(database));
 	JSONValue jsoninput;
 	jsoninput["username"] = name;

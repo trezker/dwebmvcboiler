@@ -2,17 +2,20 @@ module application.Database;
 
 import vibe.db.mongo.mongo;
 
-Database GetDatabase() {
-	return new Database();
+Database GetDatabase(string dbsuffix) {
+	return new Database(dbsuffix);
 }
 
 class Database {
 	MongoClient client;
 	string dbname;
 
-	this() {
+	this(string dbsuffix) {
 		client = connectMongoDB("mongodb://localhost");
 		dbname = "my_database";
+		if(dbsuffix) {
+			dbname ~= "_" ~ dbsuffix;
+		}
 	}
 
 	public MongoClient GetClient() {
