@@ -75,7 +75,7 @@ unittest {
 //Call to method that exists should succeed.
 unittest {
 	Ajax ajax = new Ajax();
-	ajax.SetAction("test", new SuccessTestHandler);
+	ajax.SetActionCreator("test", () => new SuccessTestHandler);
 
 	ActionTester tester = new ActionTester(&ajax.Perform, "{\"action\": \"test\"}");
 
