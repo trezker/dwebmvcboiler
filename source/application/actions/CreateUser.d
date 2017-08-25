@@ -21,13 +21,6 @@ class CreateUser: Action {
 	}
 
 	HttpResponse Perform(HttpRequest req) {
-		//Total remake.
-		//Each request handler should be an object by itself.
-		//There should be a factory to provide a handler for each request.
-		//Keep pools of handlers to reduce allocations?
-
-		//I think I'm best off assuming all parameters are in place, which they should be if this is called from client code.
-		//Exceptions should only happen during development or if someone is trying to hack the API.
 		HttpResponse res = new HttpResponse;
 		try {
 			//Read parameters
