@@ -19,16 +19,13 @@ class Application {
 		Database database = GetDatabase(null);
 		auto userStorage = new User_storage(database);
 
-		auto createUser = new CreateUser(userStorage);
-		ajax.SetAction("CreateUser", createUser);
+		ajax.SetAction("CreateUser", new CreateUser(userStorage));
 
-		auto login = new Login(userStorage);
-		ajax.SetAction("Login", login);
+		ajax.SetAction("Login", new Login(userStorage));
 
 		ajax.SetAction("Logout", new Logout);
 
-		auto currentUser = new CurrentUser(userStorage);
-		ajax.SetAction("CurrentUser", currentUser);
+		ajax.SetAction("CurrentUser", new CurrentUser(userStorage));
 	}
 
 	string RewritePath(HttpRequest request) {
