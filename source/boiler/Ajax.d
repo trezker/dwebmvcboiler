@@ -8,19 +8,22 @@ import boiler.ActionTester;
 import boiler.HttpRequest;
 import boiler.HttpResponse;
 
-class Ajax: Action {
-	private Action[string] actions;
+alias ActionCreator = Action delegate();
 
-	public void SetAction(string name, Action action) {
-		actions[name] = action;
+class Ajax: Action {
+	private ActionCreator[string] actionCreators;
+
+	public void SetActionCreator(string name, ActionCreator actionCreator) {
+		actionCreators[name] = actionCreator;
 	}
 
 	public HttpResponse Perform(HttpRequest req) {
 		HttpResponse res;
 		try {
-			string action = req.json["action"].str;
-			if(action in actions) {
-				res = actions[action].Perform (req);
+			string actionName = req.json["action"].str;
+			if(actionName in actionCreators) {
+				Action action = actionCreators[actionName]();
+				res = action.Perform (req);
 			}
 			else {
 				res = new HttpResponse;
