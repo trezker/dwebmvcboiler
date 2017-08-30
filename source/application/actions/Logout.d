@@ -35,22 +35,15 @@ unittest {
 	import application.Login;
 	import application.storage.user;
 
-	Database database = GetDatabase("test");
+	CreateTestUser("testname", "testpass");
+
+	auto tester = TestLogin("testname", "testpass");
+
+	Logout logoutHandler = new Logout();
+	tester.Request(&logoutHandler.Perform);
 	
-	try {
-		CreateTestUser("testname", "testpass");
-
-		auto tester = TestLogin("testname", "testpass");
-
-		Logout logoutHandler = new Logout();
-		tester.Request(&logoutHandler.Perform);
-		
-		JSONValue json = tester.GetResponseJson();
-		assert(json["success"] == JSONValue(true));
-		string id = tester.GetResponseSessionValue!string("id");
-		assertEqual(id, "");
-	}
-	finally {
-		database.ClearCollection("user");
-	}
+	JSONValue json = tester.GetResponseJson();
+	assert(json["success"] == JSONValue(true));
+	string id = tester.GetResponseSessionValue!string("id");
+	assertEqual(id, "");
 }
