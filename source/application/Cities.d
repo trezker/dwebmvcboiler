@@ -56,7 +56,7 @@ class Cities {
 	}
 
 	City[] Search(string search) {
-		return cities.WithPrefix(search);
+		return cities.WithPrefix(toLower(search));
 	}
 }
 

@@ -64,8 +64,8 @@ unittest {
 	city2.latitude = 3.4;
 	city2.longitude = 4.5;
 
-	cities.cities.Insert("Stockholm", city);
-	cities.cities.Insert("Stockhult", city2);
+	cities.cities.Insert("stockholm", city);
+	cities.cities.Insert("stockhult", city2);
 	FindCity findCity = new FindCity(cities);
 
 	JSONValue jsoninput;

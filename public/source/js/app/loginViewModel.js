@@ -1,7 +1,8 @@
-var loginViewModel = {
-	username: '',
-	password: '',
-	sign_in : function() {
+var loginViewModel = function() {
+	var self = this;
+	self.username = '';
+	self.password = '';
+	self.sign_in = function() {
 		var data = ko.toJS(this);
 		data.model = "user";
 		data.action = "Login";
@@ -11,17 +12,29 @@ var loginViewModel = {
 	    		window.location.href = window.location.href;
 		    }
 		});
-	},
-	sign_up : function() {
+	};
+
+	self.sign_up = function() {
 		var data = ko.toJS(this);
 		data.action = "CreateUser";
 		ajax_post(data, function(returnedData) {
 			console.log(returnedData);
-		    if(returnedData == true) {
-		    	loginViewModel.sign_in();
-		    }
+			if(returnedData == true) {
+				loginViewModel.sign_in();
+			}
 		});
-	}
+	};
+
+	self.search = ko.observable('');
+
+	self.search.subscribe(function (newText) {
+		ajax_post({
+			action: "FindCity",
+			search: newText
+		}, function(returnedData) {
+			console.log(returnedData);
+		});
+	});
 };
 
-ko.applyBindings(loginViewModel);
+ko.applyBindings(new loginViewModel());
