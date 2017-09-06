@@ -31,6 +31,16 @@ function ajax_html(url, done) {
 	.done(done);
 }
 
+function ajax_text(url) {
+    return $.ajax({
+        cache       : false,
+        method      : "GET",
+        dataType    : 'text',
+        contentType : 'application/json; charset=UTF-8',
+        url: url
+    });
+}
+
 function setup_ajax_form(form, done) {
 	form.submit(function(event) {
 		event.preventDefault();

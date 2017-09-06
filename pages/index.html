@@ -50,63 +50,12 @@
 			<div id="message">Location saved</div>
 		</div>
 	</div>
-    <script>
-	var map;
-	var marker;
-	var infowindow;
-	var messagewindow;
-
-	function initMap() {
-		var california = {lat: 37.4419, lng: -122.1419};
-		map = new google.maps.Map(document.getElementById('map'), {
-			center: california,
-			zoom: 13
-		});
-
-		infowindow = new google.maps.InfoWindow({
-			content: document.getElementById('form')
-		});
-
-		messagewindow = new google.maps.InfoWindow({
-			content: document.getElementById('message')
-		});
-
-		google.maps.event.addListener(map, 'click', function(event) {
-			if(marker) {
-				marker.setPosition(event.latLng);
-			}
-			else {
-				marker = new google.maps.Marker({
-					position: event.latLng,
-					map: map,
-					draggable: true
-				});
-			}
-
-			google.maps.event.addListener(marker, 'click', function() {
-				infowindow.open(map, marker);
-			});
-		});
-	}
-
-	function saveData() {
-		var name = escape(document.getElementById('name').value);
-		var address = escape(document.getElementById('address').value);
-		var type = document.getElementById('type').value;
-		var latlng = marker.getPosition();
-		var url = 'phpsqlinfo_addrow.php?name=' + name + '&address=' + address +
-		'&type=' + type + '&lat=' + latlng.lat() + '&lng=' + latlng.lng();
-
-		infowindow.close();
-		messagewindow.open(map, marker);
-	}
-    </script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBs2ci0iP6wwrxjQyL0i2tFV-ldljerHso&callback=initMap"></script>
 
 	<script type='text/javascript' src='/source/js/lib/knockout-3.4.1.js'></script>
 	<script type='text/javascript' src='/source/js/lib/jquery-2.1.3.min.js'></script>
 	<script type='text/javascript' src='/source/js/lib/bootstrap.min.js'></script>
 	<script type='text/javascript' src='/source/js/common.js'></script>
 	<script type='text/javascript' src='/source/js/app/userViewModel.js'></script>
+	<script type='text/javascript' src='/source/js/app/event.js'></script>
 </body>
-</html
+</html>
