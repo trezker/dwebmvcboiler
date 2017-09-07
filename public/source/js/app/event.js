@@ -34,6 +34,30 @@ function initMap() {
 			infowindow.open(map, marker);
 		});
 	});
+
+
+
+	var input = document.getElementById('search');
+
+	autocomplete = new google.maps.places.Autocomplete(input);
+
+	autocomplete.addListener('place_changed', function() {
+		var place = autocomplete.getPlace();
+		if (!place.geometry) {
+			// User entered the name of a Place that was not suggested and
+			// pressed the Enter key, or the Place Details request failed.
+			window.alert("No details available for input: '" + place.name + "'");
+			return;
+		}
+
+		// If the place has a geometry, then present it on a map.
+		if (place.geometry.viewport) {
+			map.fitBounds(place.geometry.viewport);
+		} else {
+			map.setCenter(place.geometry.location);
+			map.setZoom(17);  // Why 17? Because it looks good.
+		}
+	});
 }
 
 function saveData() {
@@ -48,8 +72,10 @@ function saveData() {
 	messagewindow.open(map, marker);
 }
 
+
+
 ajax_text('/source/text/googleapikey.txt').done(function(data) {
-	$("body").append('<script async defer src="https://maps.googleapis.com/maps/api/js?key=' + data + '&callback=initMap"></script>');
+	$("body").append('<script async defer src="https://maps.googleapis.com/maps/api/js?key=' + data + '&libraries=places&callback=initMap"></script>');
 });
 
 	
