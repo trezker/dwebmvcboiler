@@ -8,47 +8,44 @@
 	<link rel="stylesheet" href="/source/css/index.css">
 </head>
 <body>
-	<nav class="navbar navbar-default navbar-fixed-top">
-		<div class="container">
-			<ul class="nav navbar-nav navbar-right">
-				<li><a data-bind="click: sign_out" href="javaScript:void(0);">Sign out <span class="sr-only"></span></a></li>
-			</ul>
-			<ul class="nav navbar-nav navbar-right">
-				<li><a href="javaScript:void(0);">User</a></li>
-			</ul>
+	<div class="maingrid">
+		<div class="header">
+			<button class="pull-right" class="btn btn-link" data-bind="click: sign_out">Sign out</button>
 		</div>
-	</nav>
 
-	<div style="margin-top: 60px;">
-		<input id="search" type="text" placeholder="Enter a location">
-		<div id="map"></div>
-		<div style="display: none;">
-			<div id="form">
-				<table>
-					<tr>
-						<td>Name:</td>
-						<td><input type='text' id='name'/></td>
-					</tr>
-					<tr>
-						<td>Address:</td>
-						<td><input type='text' id='address'/></td>
-					</tr>
-					<tr>
-						<td>Type:</td>
-						<td>
-							<select id='type'> +
-								<option value='bar' SELECTED>bar</option>
-								<option value='restaurant'>restaurant</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td></td>
-						<td><input type='button' value='Save' onclick='saveData()'/></td>
-					</tr>
-				</table>
+		<div class="content">
+			<input id="search" type="text" placeholder="Enter a location">
+			
+			<div id="map"></div>
+			
+			<div style="display: none;">
+				<div id="form">
+					<table>
+						<tr>
+							<td>Name:</td>
+							<td><input type='text' id='name'/></td>
+						</tr>
+						<tr>
+							<td>Address:</td>
+							<td><input type='text' id='address'/></td>
+						</tr>
+						<tr>
+							<td>Type:</td>
+							<td>
+								<select id='type'> +
+									<option value='bar' SELECTED>bar</option>
+									<option value='restaurant'>restaurant</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td><input type='button' value='Save' onclick='saveData()'/></td>
+						</tr>
+					</table>
+				</div>
+				<div id="message">Location saved</div>
 			</div>
-			<div id="message">Location saved</div>
 		</div>
 	</div>
 
